@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ayarlar - Delailül Hayrat</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#00a89d",
+              "primary-dark": "#00887f",
+              "background-light": "#f8fcfc",
+              "background-dark": "#0f2322",
+              "card-border": "#e5e7eb",
+              "text-main": "#111827",
+              "text-secondary": "#6b7280",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "0.5rem",
+              "xl": "1rem",
+              "2xl": "1.5rem",
+              "full": "9999px"
+            },
+            boxShadow: {
+                'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none; 
+            background: transparent; 
+        }
+        
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #00a89d;
+            cursor: pointer;
+            margin-top: -8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #e5e7eb;
+            border-radius: 2px;
+        }
+
+        /* Firefox */
+        input[type=range]::-moz-range-thumb {
+            height: 20px;
+            width: 20px;
+            border: none;
+            border-radius: 50%;
+            background: #00a89d;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        input[type=range]::-moz-range-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #e5e7eb;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="bg-background-light text-text-main font-display antialiased min-h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 w-full bg-[#f8fcfc]/90 backdrop-blur-md border-b border-[#e6f4f3]">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-16">
+<!-- Logo & Brand -->
+<div class="flex items-center gap-3">
+<div class="size-8 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_319)">
+<path d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z" fill="currentColor"></path>
+</g>
+<defs>
+<clippath id="clip0_6_319"><rect fill="white" height="48" width="48"></rect></clippath>
+</defs>
+</svg>
+</div>
+<h1 class="text-[#0c1d1b] text-lg font-bold tracking-tight hidden sm:block">Delailül Hayrat</h1>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-[#0c1d1b] hover:text-primary text-sm font-medium transition-colors" href="#">Ana Sayfa</a>
+<a class="text-[#0c1d1b] hover:text-primary text-sm font-medium transition-colors" href="#">Okuma</a>
+<a class="text-[#0c1d1b] hover:text-primary text-sm font-medium transition-colors" href="#">Takip</a>
+<a class="text-primary text-sm font-bold border-b-2 border-primary pb-0.5" href="#">Ayarlar</a>
+</nav>
+<!-- User / Action -->
+<div class="flex items-center gap-4">
+<button class="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-9 px-4 bg-primary hover:bg-primary-dark transition-colors text-white text-sm font-bold shadow-sm">
+<span>Giriş Yap</span>
+</button>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-9 border border-gray-200 cursor-pointer" data-alt="User profile placeholder showing a generic silhouette" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCydWqdVMWpnI2IR3WRtGbJiKb9R8IGFcfMmo4le49ghpEbpyC7LQu4UQna2dbwt-2mxRrKiKVkq1onkJZ2wWA2_HIHwblJVeovHBV1pLf6e164ZlYHDI1fZ2D_VNCnbca3PVrmhyuXkZ9I5DfPbBTf3IuJqPf-66VkZe6YNxtVhnoWkv3zc9TF6RKjt4N1ALzysdrULuPPjH4BRA2LvpG0a-pVs6sNTTtluyVyAT747CA5lAcmILlQU6ZLVaIGJuQqVS1O2OQSQd0");'></div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+<!-- Page Title -->
+<div class="mb-8">
+<h2 class="text-3xl sm:text-[32px] font-bold text-text-main tracking-tight">Ayarlar</h2>
+<p class="text-text-secondary mt-2 text-base">Uygulama görünümünü ve okuma deneyimini kişiselleştirin.</p>
+</div>
+<div class="space-y-6">
+<!-- Uygulama (Application) Card -->
+<section class="bg-white rounded-2xl border border-card-border shadow-soft overflow-hidden">
+<div class="p-6 sm:p-8">
+<div class="flex items-center gap-3 mb-6">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span aria-hidden="true" class="material-symbols-outlined text-2xl">phonelink_setup</span>
+</div>
+<h3 class="text-xl font-bold text-text-main">Uygulama</h3>
+</div>
+<div class="space-y-6">
+<!-- Language Selection -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<label class="block text-text-main font-semibold mb-1">Dil Seçimi</label>
+<p class="text-text-secondary text-sm">Uygulama arayüz dilini belirleyin.</p>
+</div>
+<div class="relative w-full sm:w-48">
+<select class="w-full bg-[#f9fafb] border border-gray-300 text-text-main text-sm rounded-xl focus:ring-primary focus:border-primary block p-2.5">
+<option selected="">Türkçe</option>
+<option>English</option>
+<option>العربية</option>
+</select>
+</div>
+</div>
+<hr class="border-gray-100"/>
+<!-- Theme Selection -->
+<div class="flex flex-col gap-4">
+<div>
+<label class="block text-text-main font-semibold mb-1">Görünüm Modu</label>
+<p class="text-text-secondary text-sm">Tercih ettiğiniz temayı seçin.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+<!-- Light Mode (Active) -->
+<button class="group flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 border-primary bg-primary/5 cursor-pointer transition-all">
+<span class="material-symbols-outlined text-primary text-2xl">light_mode</span>
+<span class="text-sm font-semibold text-primary">Aydınlık</span>
+</button>
+<!-- Dark Mode -->
+<button class="group flex flex-col items-center justify-center gap-2 p-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 cursor-pointer transition-all">
+<span class="material-symbols-outlined text-gray-400 group-hover:text-gray-600 text-2xl">dark_mode</span>
+<span class="text-sm font-medium text-gray-600 group-hover:text-gray-800">Karanlık</span>
+</button>
+<!-- System Mode -->
+<button class="group flex flex-col items-center justify-center gap-2 p-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 cursor-pointer transition-all">
+<span class="material-symbols-outlined text-gray-400 group-hover:text-gray-600 text-2xl">devices</span>
+<span class="text-sm font-medium text-gray-600 group-hover:text-gray-800">Sistem</span>
+</button>
+<!-- Sepia Mode -->
+<button class="group flex flex-col items-center justify-center gap-2 p-3 rounded-xl border border-gray-200 hover:border-[#d6c4a0] hover:bg-[#fcf8ed] cursor-pointer transition-all">
+<span class="material-symbols-outlined text-[#a68b5b] text-2xl">menu_book</span>
+<span class="text-sm font-medium text-[#8c734b]">Sepya</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bildirimler (Notifications) Card -->
+<section class="bg-white rounded-2xl border border-card-border shadow-soft overflow-hidden">
+<div class="p-6 sm:p-8">
+<div class="flex items-center gap-3 mb-6">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span aria-hidden="true" class="material-symbols-outlined text-2xl">notifications_active</span>
+</div>
+<h3 class="text-xl font-bold text-text-main">Bildirimler</h3>
+</div>
+<div class="space-y-6">
+<!-- Daily Reminder -->
+<div class="flex items-center justify-between">
+<div class="flex-1 pr-4">
+<label class="block text-text-main font-semibold mb-1">Günlük Hatırlatma</label>
+<p class="text-text-secondary text-sm">Her gün belirlediğiniz saatte okuma hatırlatması alın.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Reminder Time (Conditional Logic would go here in React, shown statically) -->
+<div class="pl-0 sm:pl-4 border-l-2 border-primary/20 ml-1 py-1">
+<div class="flex items-center justify-between">
+<label class="text-sm font-medium text-text-main">Hatırlatma Saati</label>
+<input class="bg-[#f9fafb] border border-gray-300 text-text-main text-sm rounded-lg focus:ring-primary focus:border-primary block p-2 w-32" type="time" value="06:30"/>
+</div>
+</div>
+<hr class="border-gray-100"/>
+<!-- Missed Days -->
+<div class="flex items-center justify-between">
+<div class="flex-1 pr-4">
+<label class="block text-text-main font-semibold mb-1">Kaçan Günleri Hatırlat</label>
+<p class="text-text-secondary text-sm">Okumadığınız günleri telafi etmeniz için bildirim gönder.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+</section>
+<!-- Okuma Ayarları (Reading Settings) Card -->
+<section class="bg-white rounded-2xl border border-card-border shadow-soft overflow-hidden">
+<div class="p-6 sm:p-8">
+<div class="flex items-center gap-3 mb-6">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span aria-hidden="true" class="material-symbols-outlined text-2xl">format_size</span>
+</div>
+<h3 class="text-xl font-bold text-text-main">Okuma Ayarları</h3>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+<!-- Controls Column -->
+<div class="space-y-8">
+<!-- Font Size -->
+<div>
+<div class="flex justify-between mb-2">
+<label class="text-text-main font-semibold">Yazı Boyutu</label>
+<span class="text-text-secondary text-sm">22px</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-gray-400 text-lg">text_decrease</span>
+<input class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" max="36" min="14" type="range" value="22"/>
+<span class="material-symbols-outlined text-gray-400 text-2xl">text_increase</span>
+</div>
+</div>
+<!-- Line Height -->
+<div>
+<div class="flex justify-between mb-2">
+<label class="text-text-main font-semibold">Satır Aralığı</label>
+<span class="text-text-secondary text-sm">1.8</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-gray-400 text-lg">format_align_justify</span>
+<input class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" max="3" min="1" step="0.1" type="range" value="1.8"/>
+<span class="material-symbols-outlined text-gray-400 text-2xl">format_align_justify</span>
+</div>
+</div>
+<hr class="border-gray-100"/>
+<!-- Content Toggles -->
+<div class="space-y-4">
+<label class="text-text-main font-semibold block mb-3">İçerik Seçenekleri</label>
+<div class="flex items-center justify-between">
+<span class="text-text-main">Arapça Metni Göster</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-text-main">Transkripsiyon Göster</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-text-main">Türkçe Mana Göster</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+<!-- Preview Column -->
+<div class="bg-[#f9fafb] rounded-xl p-6 border border-dashed border-gray-300 flex flex-col justify-center">
+<span class="text-xs uppercase tracking-widest text-text-secondary font-bold mb-4 text-center">Önizleme</span>
+<!-- Simulated Reading Content -->
+<div class="text-center" style="font-size: 22px; line-height: 1.8;">
+<p class="font-bold text-gray-900 mb-4" style="font-family: 'Times New Roman', serif;">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</p>
+<p class="text-gray-800 text-lg leading-relaxed">Rahman ve Rahim olan Allah'ın adıyla.</p>
+<p class="text-gray-600 text-base mt-2">Allah'ım! Efendimiz Muhammed'e ve onun aline salat eyle.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Save Action (Optional but good for UX) -->
+<div class="flex justify-end pt-4 pb-12">
+<button class="bg-primary hover:bg-primary-dark text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-primary/30 transition-all transform active:scale-95">
+                    Ayarları Kaydet
+                </button>
+</div>
+</div>
+</main>
+</body></html>

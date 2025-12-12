@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Okuma Sayfası - Delailül Hayrat</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Noto+Naskh+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00a89d",
+                        "primary-dark": "#00887f",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0f2322",
+                        "paper-light": "#fdfaf3", 
+                        "paper-dark": "#162e2b",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "arabic": ["Noto Naskh Arabic", "serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111827] dark:text-gray-100 font-display antialiased transition-colors duration-200">
+<!-- Sticky Header -->
+<header class="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#0c1d1b]/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+<div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+<!-- Back Button -->
+<button aria-label="Haftalık görünüme dön" class="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 text-gray-600 dark:text-gray-300 transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<!-- Title -->
+<h1 class="text-lg md:text-xl font-bold text-[#0c1d1b] dark:text-white tracking-tight">Pazartesi Okuması</h1>
+<!-- Settings Button -->
+<button aria-label="Ayarlar" class="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 text-gray-600 dark:text-gray-300 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-grow flex flex-col items-center w-full px-4 py-6 md:py-8">
+<!-- Reading Card Container -->
+<div class="w-full max-w-[800px] bg-paper-light dark:bg-paper-dark rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700/50 flex flex-col relative overflow-hidden">
+<!-- Top Decoration / Progress Indicator (Optional subtle touch) -->
+<div class="h-1 w-full bg-gray-100 dark:bg-gray-800">
+<div class="h-full bg-primary w-1/4 rounded-r-full"></div>
+</div>
+<div class="p-6 md:p-10 lg:p-12">
+<!-- Status Chip -->
+<div class="flex justify-center mb-10">
+<div class="inline-flex items-center px-4 py-1.5 rounded-full border border-primary/30 bg-primary/5 dark:bg-primary/10">
+<span class="w-2 h-2 rounded-full bg-primary mr-2 animate-pulse"></span>
+<span class="text-primary text-xs font-bold uppercase tracking-wide">Mod: Bugünkü okuma</span>
+</div>
+</div>
+<!-- Reading Content Flow -->
+<div class="space-y-12 md:space-y-16">
+<!-- Block 1: Basmala -->
+<div class="flex flex-col gap-4 group">
+<!-- Arabic -->
+<p class="text-right font-arabic text-3xl md:text-4xl leading-[2] text-[#111827] dark:text-gray-50" dir="rtl">
+                            بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+                        </p>
+<!-- Transliteration & Meaning Container -->
+<div class="flex flex-col gap-2 border-l-2 border-primary/20 pl-4 mt-2">
+<!-- Transliteration -->
+<p class="text-base md:text-lg font-medium text-gray-800 dark:text-gray-200">
+                                Bismillâhirrahmânirrahîm
+                            </p>
+<!-- Meaning -->
+<p class="text-sm md:text-base text-gray-500 dark:text-gray-400 font-light leading-relaxed">
+                                Rahmân ve Rahîm olan Allah'ın adıyla
+                            </p>
+</div>
+</div>
+<!-- Divider -->
+<div class="flex items-center justify-center opacity-20">
+<span class="material-symbols-outlined text-primary text-sm">filter_vintage</span>
+</div>
+<!-- Block 2: Salavat Start -->
+<div class="flex flex-col gap-4 group">
+<!-- Arabic -->
+<p class="text-right font-arabic text-3xl md:text-4xl leading-[2] text-[#111827] dark:text-gray-50" dir="rtl">
+                            اَللّٰهُمَّ صَلِّ عَلٰى سَيِّدِنَا مُحَمَّدٍ وَعَلٰى اٰلِ سَيِّدِنَا مُحَمَّدٍ
+                        </p>
+<!-- Transliteration & Meaning Container -->
+<div class="flex flex-col gap-2 border-l-2 border-primary/20 pl-4 mt-2">
+<!-- Transliteration -->
+<p class="text-base md:text-lg font-medium text-gray-800 dark:text-gray-200">
+                                Allâhümme salli alâ seyyidinâ Muhammedin ve alâ âli seyyidinâ Muhammed
+                            </p>
+<!-- Meaning -->
+<p class="text-sm md:text-base text-gray-500 dark:text-gray-400 font-light leading-relaxed">
+                                Allah'ım! Efendimiz Muhammed'e ve Efendimiz Muhammed'in âline salât eyle.
+                            </p>
+</div>
+</div>
+<!-- Divider -->
+<div class="flex items-center justify-center opacity-20">
+<span class="material-symbols-outlined text-primary text-sm">filter_vintage</span>
+</div>
+<!-- Block 3: Further Text -->
+<div class="flex flex-col gap-4 group">
+<!-- Arabic -->
+<p class="text-right font-arabic text-3xl md:text-4xl leading-[2] text-[#111827] dark:text-gray-50" dir="rtl">
+                            كَمَا صَلَّيْتَ عَلٰى سَيِّدِنَا اِبْرٰه۪يمَ وَعَلٰى اٰلِ سَيِّدِنَا اِبْرٰه۪يمَ اِنَّكَ حَم۪يدٌ مَج۪يدٌ
+                        </p>
+<!-- Transliteration & Meaning Container -->
+<div class="flex flex-col gap-2 border-l-2 border-primary/20 pl-4 mt-2">
+<!-- Transliteration -->
+<p class="text-base md:text-lg font-medium text-gray-800 dark:text-gray-200">
+                                Kemâ salleyte alâ seyyidinâ İbrâhîme ve alâ âli seyyidinâ İbrâhîm, inneke hamîdun mecîd
+                            </p>
+<!-- Meaning -->
+<p class="text-sm md:text-base text-gray-500 dark:text-gray-400 font-light leading-relaxed">
+                                (Tıpkı) Efendimiz İbrahim'e ve Efendimiz İbrahim'in âline salât ettiğin gibi. Şüphesiz sen Hamîd (övülen) ve Mecîd'sin (şanı yüce).
+                            </p>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="mt-20 pt-8 border-t border-gray-100 dark:border-gray-800/50 flex flex-col gap-4">
+<button class="group relative w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white font-bold text-base py-4 px-6 rounded-xl shadow-lg shadow-primary/20 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">check_circle</span>
+                        Okumayı tamamla
+                    </button>
+<button class="w-full flex items-center justify-center gap-2 bg-transparent border border-primary text-primary hover:bg-primary/5 font-semibold text-base py-3.5 px-6 rounded-xl transition-all duration-200">
+<span class="material-symbols-outlined text-lg">tune</span>
+                        Okuma ayarlarını aç
+                    </button>
+</div>
+</div>
+</div>
+<!-- Bottom safe area padding -->
+<div class="h-8"></div>
+</main>
+</body></html>

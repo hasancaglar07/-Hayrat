@@ -1,0 +1,170 @@
+[
+  {
+    "id": "mon-1",
+    "weekday": "monday",
+    "order": 1,
+    "title": "Pazartesi Girişi",
+    "arabicText": "...",
+    "transliteration": "...",
+    "translations": {
+      "tr": "Bu bölüm Delâilü'l-Hayrât'ın pazartesi okumasından bir pasajı temsil eder. Gerçek metin daha sonra eklenecektir.",
+      "en": "Placeholder for Monday's Dalail al-Khayrat section. Real text will be added later."
+    }
+  },
+  {
+    "id": "mon-2",
+    "weekday": "monday",
+    "order": 2,
+    "title": "Salavat Blok 1",
+    "arabicText": "...",
+    "transliteration": "...",
+    "translations": {
+      "tr": "Bu bölüm salavat pasajı için yer tutucudur. Nihai metin eklenecektir.",
+      "en": "Placeholder salawat passage for Monday; final text to be added."
+    }
+  },
+  {
+    "id": "tue-1",
+    "weekday": "tuesday",
+    "order": 1,
+    "title": "Salı Girişi",
+    "arabicText": "...",
+    "transliteration": "...",
+    "translations": {
+      "tr": "Salı günü okunan bölüm için örnek başlık. Gerçek dua metni daha sonra eklenecek.",
+      "en": "Sample heading for Tuesday reading. Actual prayer text will be added later."
+    }
+  },
+  {
+    "id": "tue-2",
+    "weekday": "tuesday",
+    "order": 2,
+    "title": "Salavat Blok 2",
+    "arabicText": "...",
+    "transliteration": "...",
+    "translations": {
+      "tr": "Bu salavat bloğu salı okumasına aittir, içerik sonradan gelecektir.",
+      "en": "This salawat block belongs to Tuesday reading; content to follow."
+    }
+  },
+  {
+    "id": "wed-1",
+    "weekday": "wednesday",
+    "order": 1,
+    "title": "Çarşamba Başlangıç",
+    "arabicText": "...",
+    "transliteration": "...",
+    "translations": {
+      "tr": "Çarşamba okumasının giriş kısmı için yer tutucu.",
+      "en": "Placeholder intro for Wednesday's reading sequence."
+    }
+  },
+  {
+    "id": "wed-2",
+    "weekday": "wednesday",
+    "order": 2,
+    "title": "Zikir Blok",
+    "arabicText": "...",
+    "transliteration": "...",
+    "translations": {
+      "tr": "Zikir/salavat pasajı temsilidir, gerçek metin eklenecek.",
+      "en": "Represents a dhikr/salawat passage; real text will replace this."
+    }
+  },
+  {
+    "id": "thu-1",
+    "weekday": "thursday",
+    "order": 1,
+    "title": "Perşembe Girişi",
+    "arabicText": "...",
+    "transliteration": "...",
+    "translations": {
+      "tr": "Perşembe okumasının ilk bölümü için örnek kayıt.",
+      "en": "Example record for the first Thursday section."
+    }
+  },
+  {
+    "id": "thu-2",
+    "weekday": "thursday",
+    "order": 2,
+    "title": "Salavat Blok 3",
+    "arabicText": "...",
+    "transliteration": "...",
+    "translations": {
+      "tr": "Salavat pasajı, gerçek içerik daha sonra eklenecek.",
+      "en": "Salawat placeholder; actual content will be supplied later."
+    }
+  },
+  {
+    "id": "fri-1",
+    "weekday": "friday",
+    "order": 1,
+    "title": "Cuma Başlangıç",
+    "arabicText": "...",
+    "transliteration": "...",
+    "translations": {
+      "tr": "Cuma gününe ait giriş bölümü için yer tutucu.",
+      "en": "Placeholder intro for the Friday reading."
+    }
+  },
+  {
+    "id": "fri-2",
+    "weekday": "friday",
+    "order": 2,
+    "title": "Salavat ve Dua",
+    "arabicText": "...",
+    "transliteration": "...",
+    "translations": {
+      "tr": "Cuma salavat ve dua pasajı burada temsil edilir.",
+      "en": "Represents a Friday salawat/dua passage."
+    }
+  },
+  {
+    "id": "sat-1",
+    "weekday": "saturday",
+    "order": 1,
+    "title": "Cumartesi Girişi",
+    "arabicText": "...",
+    "transliteration": "...",
+    "translations": {
+      "tr": "Cumartesi okumasının başlangıç bölümü için yer tutucu.",
+      "en": "Placeholder for Saturday reading introduction."
+    }
+  },
+  {
+    "id": "sat-2",
+    "weekday": "saturday",
+    "order": 2,
+    "title": "Salavat Blok 4",
+    "arabicText": "...",
+    "transliteration": "...",
+    "translations": {
+      "tr": "Cumartesi salavat bölümü, gerçek metin eklenecek.",
+      "en": "Saturday salawat block; real text will be inserted."
+    }
+  },
+  {
+    "id": "sun-1",
+    "weekday": "sunday",
+    "order": 1,
+    "title": "Pazar Girişi",
+    "arabicText": "...",
+    "transliteration": "...",
+    "translations": {
+      "tr": "Pazar okumasının giriş kısmı için örnek.",
+      "en": "Sample intro for Sunday reading."
+    }
+  },
+  {
+    "id": "sun-2",
+    "weekday": "sunday",
+    "order": 2,
+    "title": "Kapanış Salavatı",
+    "arabicText": "...",
+    "transliteration": "...",
+    "translations": {
+      "tr": "Haftayı tamamlayan salavat için yer tutucu.",
+      "en": "Placeholder closing salawat to complete the week."
+    }
+  }
+]

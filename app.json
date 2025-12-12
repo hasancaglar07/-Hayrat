@@ -22,11 +22,11 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "output": "static",
+      "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",
+      "sentry-expo",
       [
         "expo-splash-screen",
         {
@@ -41,8 +41,10 @@
       ]
     ],
     "experiments": {
-      "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "sentryDsn": ""
     }
   }
 }

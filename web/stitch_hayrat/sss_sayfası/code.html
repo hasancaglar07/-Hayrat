@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Delailül Hayrat - Sık Sorulan Sorular</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#00a89d",
+              "primary-dark": "#00887f",
+              "background-light": "#f5f8f8",
+              "background-dark": "#0f2322",
+              "text-dark": "#111827",
+              "text-secondary": "#6b7280",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "1rem", "full": "9999px"}, // Adjusted 2xl to match soft corners
+            boxShadow: {
+                'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar for cleaner look if needed */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+        
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-white text-text-dark font-display antialiased selection:bg-primary/20 selection:text-primary">
+<div class="flex flex-col min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 w-full border-b border-[#e6f4f3] bg-white/90 backdrop-blur-md">
+<div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-3xl">menu_book</span>
+<h2 class="text-text-dark text-lg font-bold leading-tight tracking-tight">Delailül Hayrat</h2>
+</div>
+</div>
+<!-- Desktop Nav -->
+<nav class="hidden md:flex flex-1 justify-end items-center gap-8">
+<a class="text-sm font-medium text-text-dark hover:text-primary transition-colors" href="#">Ana Sayfa</a>
+<a class="text-sm font-medium text-text-dark hover:text-primary transition-colors" href="#">Okumalarım</a>
+<a class="text-sm font-medium text-primary" href="#">SSS</a>
+<a class="text-sm font-medium text-text-dark hover:text-primary transition-colors" href="#">İletişim</a>
+<button class="flex items-center justify-center rounded-lg bg-primary px-5 py-2 text-sm font-bold text-white transition-colors hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                        Giriş Yap
+                    </button>
+</nav>
+<!-- Mobile Menu Icon (Placeholder) -->
+<button class="md:hidden p-2 text-text-dark hover:text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</header>
+<main class="flex-grow">
+<!-- Page Heading Section -->
+<section class="bg-white pt-12 pb-8 sm:pt-16 sm:pb-12">
+<div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+<h1 class="text-3xl font-black tracking-tight text-text-dark sm:text-4xl mb-4">
+                        Sık Sorulan Sorular
+                    </h1>
+<p class="text-lg text-text-secondary leading-relaxed max-w-2xl mx-auto">
+                        Delailül Hayrat okuma takibi, uygulama kullanımı ve hesap işlemleri hakkında en çok merak edilen soruların cevaplarını burada bulabilirsiniz.
+                    </p>
+</div>
+</section>
+<!-- FAQ Accordion List -->
+<section class="pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 bg-white">
+<div class="mx-auto max-w-3xl flex flex-col gap-4">
+<!-- Item 1 -->
+<details class="group rounded-2xl border border-gray-200 bg-white shadow-soft transition-all duration-300 hover:shadow-md open:border-primary/30">
+<summary class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left focus:outline-none">
+<span class="text-base font-semibold text-text-dark group-hover:text-primary transition-colors">Delailül Hayrat okumalarımı nasıl işaretlerim?</span>
+<span class="material-symbols-outlined text-primary transition-transform duration-300 group-open:rotate-180">expand_more</span>
+</summary>
+<div class="border-t border-gray-100 bg-gray-50/50 px-6 py-5 rounded-b-2xl">
+<p class="text-base leading-relaxed text-text-secondary">
+                                Ana sayfada yer alan günlük okuma kartı üzerindeki "Tamamladım" butonuna tıklayarak bugünkü okumanızı işaretleyebilirsiniz. Eğer o günkü hizbi parçalar halinde okuyorsanız, ilerleme çubuğunu manuel olarak güncelleyebilirsiniz.
+                            </p>
+</div>
+</details>
+<!-- Item 2 -->
+<details class="group rounded-2xl border border-gray-200 bg-white shadow-soft transition-all duration-300 hover:shadow-md open:border-primary/30">
+<summary class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left focus:outline-none">
+<span class="text-base font-semibold text-text-dark group-hover:text-primary transition-colors">Geriye dönük okuma ekleyebilir miyim?</span>
+<span class="material-symbols-outlined text-primary transition-transform duration-300 group-open:rotate-180">expand_more</span>
+</summary>
+<div class="border-t border-gray-100 bg-gray-50/50 px-6 py-5 rounded-b-2xl">
+<p class="text-base leading-relaxed text-text-secondary">
+                                Evet, takvim menüsünden geçmiş bir tarihi seçerek o güne ait okumanızı eksik bıraktıysanız tamamlayabilirsiniz. İstatistikleriniz bu işlemden sonra otomatik olarak güncellenecektir.
+                            </p>
+</div>
+</details>
+<!-- Item 3 -->
+<details class="group rounded-2xl border border-gray-200 bg-white shadow-soft transition-all duration-300 hover:shadow-md open:border-primary/30">
+<summary class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left focus:outline-none">
+<span class="text-base font-semibold text-text-dark group-hover:text-primary transition-colors">Bildirim ayarlarını nasıl değiştirebilirim?</span>
+<span class="material-symbols-outlined text-primary transition-transform duration-300 group-open:rotate-180">expand_more</span>
+</summary>
+<div class="border-t border-gray-100 bg-gray-50/50 px-6 py-5 rounded-b-2xl">
+<p class="text-base leading-relaxed text-text-secondary">
+                                Profil menüsündeki "Ayarlar" sekmesine giderek günlük hatırlatıcı saatini ve bildirim türlerini (E-posta veya Anlık Bildirim) tercihlerinize göre özelleştirebilirsiniz.
+                            </p>
+</div>
+</details>
+<!-- Item 4 -->
+<details class="group rounded-2xl border border-gray-200 bg-white shadow-soft transition-all duration-300 hover:shadow-md open:border-primary/30">
+<summary class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left focus:outline-none">
+<span class="text-base font-semibold text-text-dark group-hover:text-primary transition-colors">Uygulama ücretli mi?</span>
+<span class="material-symbols-outlined text-primary transition-transform duration-300 group-open:rotate-180">expand_more</span>
+</summary>
+<div class="border-t border-gray-100 bg-gray-50/50 px-6 py-5 rounded-b-2xl">
+<p class="text-base leading-relaxed text-text-secondary">
+                                Delailül Hayrat takip uygulaması tamamen ücretsizdir ve reklamsız olarak hizmet vermektedir. Amacımız bu güzel ameli kolaylaştırmak ve yaygınlaştırmaktır.
+                            </p>
+</div>
+</details>
+<!-- Item 5 -->
+<details class="group rounded-2xl border border-gray-200 bg-white shadow-soft transition-all duration-300 hover:shadow-md open:border-primary/30">
+<summary class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left focus:outline-none">
+<span class="text-base font-semibold text-text-dark group-hover:text-primary transition-colors">Hesabımı ve verilerimi nasıl sıfırlarım?</span>
+<span class="material-symbols-outlined text-primary transition-transform duration-300 group-open:rotate-180">expand_more</span>
+</summary>
+<div class="border-t border-gray-100 bg-gray-50/50 px-6 py-5 rounded-b-2xl">
+<p class="text-base leading-relaxed text-text-secondary">
+                                Hesabım sayfasının en altında bulunan "Verileri Sıfırla" seçeneği ile tüm okuma geçmişinizi silebilirsiniz. Hesabınızı tamamen kapatmak isterseniz "Hesabı Sil" butonunu kullanabilirsiniz; bu işlem geri alınamaz.
+                            </p>
+</div>
+</details>
+<!-- Item 6 -->
+<details class="group rounded-2xl border border-gray-200 bg-white shadow-soft transition-all duration-300 hover:shadow-md open:border-primary/30">
+<summary class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left focus:outline-none">
+<span class="text-base font-semibold text-text-dark group-hover:text-primary transition-colors">Hangi diller destekleniyor?</span>
+<span class="material-symbols-outlined text-primary transition-transform duration-300 group-open:rotate-180">expand_more</span>
+</summary>
+<div class="border-t border-gray-100 bg-gray-50/50 px-6 py-5 rounded-b-2xl">
+<p class="text-base leading-relaxed text-text-secondary">
+                                Şu an için uygulamamız Türkçe, Arapça ve İngilizce dillerini desteklemektedir. Dil ayarlarını profilinizden istediğiniz zaman değiştirebilirsiniz.
+                            </p>
+</div>
+</details>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="relative overflow-hidden py-16 px-4">
+<!-- Decorative background elements -->
+<div class="absolute inset-0 bg-gradient-to-b from-transparent to-primary/5 pointer-events-none"></div>
+<div class="relative mx-auto max-w-2xl text-center p-8 rounded-3xl bg-white border border-gray-100 shadow-lg">
+<div class="mb-4 flex justify-center text-primary">
+<span class="material-symbols-outlined text-4xl">support_agent</span>
+</div>
+<h2 class="text-2xl font-bold tracking-tight text-text-dark mb-3">
+                        Sorunuzu bulamadınız mı?
+                    </h2>
+<p class="text-text-secondary mb-8">
+                        Merak ettikleriniz veya önerileriniz için bizimle her zaman iletişime geçebilirsiniz. Size yardımcı olmaktan mutluluk duyarız.
+                    </p>
+<div class="flex justify-center">
+<button class="inline-flex items-center justify-center rounded-lg border-2 border-primary bg-white px-8 py-3 text-base font-bold text-primary transition-all hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                            Bize Ulaşın
+                        </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="border-t border-gray-100 bg-background-light py-12">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<div class="flex flex-col items-center justify-center gap-6">
+<!-- Footer Links -->
+<div class="flex flex-wrap justify-center gap-x-8 gap-y-4">
+<a class="text-sm font-medium text-text-secondary hover:text-primary transition-colors" href="#">Hakkımızda</a>
+<a class="text-sm font-medium text-text-secondary hover:text-primary transition-colors" href="#">Gizlilik Politikası</a>
+<a class="text-sm font-medium text-text-secondary hover:text-primary transition-colors" href="#">Kullanım Şartları</a>
+<a class="text-sm font-medium text-text-secondary hover:text-primary transition-colors" href="#">Yardım</a>
+</div>
+<!-- Social Icons (Using Material Symbols as placeholders) -->
+<div class="flex gap-6">
+<a aria-label="Website" class="text-text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">language</span>
+</a>
+<a aria-label="Twitter/X" class="text-text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">tag</span>
+</a>
+<a aria-label="Instagram" class="text-text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">photo_camera</span>
+</a>
+<a aria-label="Email" class="text-text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">mail</span>
+</a>
+</div>
+<div class="mt-4 text-center">
+<p class="text-sm text-text-secondary">© 2023 Delailül Hayrat Takip. Tüm hakları saklıdır.</p>
+</div>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

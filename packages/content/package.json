@@ -1,0 +1,8 @@
+{
+  "name": "@delail/content",
+  "version": "0.0.1",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "main": "src/index.ts"
+}
