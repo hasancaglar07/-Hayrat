@@ -34,10 +34,8 @@ export async function generateMetadata({ params }: { params: { locale: Locale; d
 
 export default function ReadDayPage({
   params,
-  searchParams,
 }: {
   params: { locale: Locale; day: string };
-  searchParams?: { marked?: string };
 }) {
   const day = params.day as Weekday;
   if (!validDays.includes(day)) return notFound();
