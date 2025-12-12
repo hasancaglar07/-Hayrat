@@ -86,6 +86,16 @@ export default async function WeeklyOverview({
   const errorReason = typeof searchParams?.reason === "string" ? searchParams.reason : undefined;
   const errorCode = typeof searchParams?.code === "string" ? searchParams.code : undefined;
   const completedDate = typeof searchParams?.date === "string" ? searchParams.date : undefined;
+  const syncErrorDefault =
+    errorReason === "missing_schema"
+      ? "Supabase tabloları yok (schema kurulmamış). `web/supabase/schema.sql` dosyasını Supabase SQL Editor’da çalıştır."
+      : errorReason === "future_date"
+        ? "Saat dilimi nedeniyle 'bugün' uyuşmadı (gelecek tarih). Sayfayı yenileyip tekrar dene."
+        : errorReason === "too_old"
+          ? "Çok eski tarih (365+ gün) kaydedilmez."
+          : errorCode
+            ? `Supabase hata kodu: ${errorCode}`
+            : "Okuma kaydedilemedi. Supabase bağlantısı/tabloları kontrol edin.";
   const flashItems = hasFlash
     ? [
         ...(Number.isFinite(basePoints) && basePoints > 0
@@ -159,97 +169,81 @@ export default async function WeeklyOverview({
       ) : syncError ? (
         <FlashNotice
           title={t("screen.reading.completeSuccessTitle", { defaultValue: "Kaydedilemedi" })}
-          body={t("screen.reading.completeSuccessBody", {
-            defaultValue:
-              errorReason === "missing_schema"
-                ? "Supabase tabloları yok (schema kurulmamış). `web/supabase/schema.sql` dosyasını Supabase SQL Editor’da çalıştır."
-                : errorCode
-                  ? `Supabase hata kodu: ${errorCode}`
-                  : 
-              errorReason === "future_date"
-                ? "Saat dilimi nedeniyle 'bugün' uyuşmadı (gelecek tarih). Sayfayı yenileyip tekrar dene."
-                : errorReason === "too_old"
-                  ? "Çok eski tarih (365+ gün) kaydedilmez."
-                : "Okuma kaydedilemedi. Supabase bağlantısı/tabloları kontrol edin.",
-          })}
+          body={t("screen.reading.completeSuccessBody", { defaultValue: syncErrorDefault })}
           variant="warning"
           clearKeys={["flash", "reason", "code", "ts"]}
         />
       ) : null}
-      <header className="space-y-3">
-        <p className="text-base font-semibold text-text-medium">{todayDisplay}</p>
-        <h1 className="page-title">{t("screen.home.title")}</h1>
-        <p className="max-w-3xl text-base text-text-medium">{t("screen.home.subtitle")}</p>
-      </header>
+      <section className="panel relative overflow-hidden rounded-3xl p-5 sm:p-6">
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(0,168,148,0.12),transparent_55%),radial-gradient(circle_at_100%_10%,rgba(16,185,129,0.08),transparent_45%)]" />
 
-      <section className="panel relative overflow-hidden rounded-3xl p-6 sm:p-8">
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,168,148,0.10),transparent_55%),radial-gradient(circle_at_90%_0%,rgba(16,185,129,0.08),transparent_45%)]" />
-
-        <div className="relative flex flex-col gap-5">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div className="flex-1">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-sm font-semibold text-text-medium">{t("screen.home.weeklyTitle")}</p>
-                  <div className="mt-2 flex items-baseline gap-3">
-                    <span className="text-5xl font-extrabold tracking-tight text-primary sm:text-6xl">{progress}%</span>
-                    <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary ring-1 ring-primary/15">
-                      {completedCount}/{targetDays}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/70 ring-1 ring-border-light/70 text-primary shadow-sm dark:bg-background-offwhite/30 dark:ring-white/10">
-                  <span className="material-symbols-outlined text-[22px]">monitoring</span>
-                </div>
+        <div className="relative flex flex-col gap-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-extrabold tracking-tight text-text-dark sm:text-xl">{t("screen.home.title")}</h1>
+                <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary ring-1 ring-primary/15">
+                  {completedCount}/{targetDays}
+                </span>
               </div>
-
-              <div className="mt-4 space-y-2">
-                <p className="text-sm font-semibold text-text-medium">{t("screen.home.weeklyProgressLabel", { completed: completedCount, total: targetDays })}</p>
-                <div className="h-4 w-full overflow-hidden rounded-full bg-background-offwhite ring-1 ring-border-light/60 dark:bg-white/5 dark:ring-white/10">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-primary via-primary to-emerald-500 transition-all"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-              </div>
+              <p className="mt-1 text-sm font-medium text-text-medium">{t("screen.home.subtitle")}</p>
             </div>
+            <div className="mt-2 inline-flex w-fit items-center gap-2 rounded-full bg-white/70 px-3 py-1.5 text-xs font-semibold text-text-medium ring-1 ring-border-light/70 backdrop-blur sm:mt-0 dark:bg-background-offwhite/20 dark:ring-white/10">
+              <span className="material-symbols-outlined text-[16px] text-text-light">calendar_today</span>
+              {todayDisplay}
+            </div>
+          </div>
 
-            <div className="w-full lg:w-auto">
-              <div className="overflow-hidden rounded-2xl bg-background/70 shadow-sm ring-1 ring-border-light/70 backdrop-blur dark:bg-background-offwhite/10 dark:ring-white/10">
-                <div className="grid grid-cols-3 divide-x divide-border-light/70 dark:divide-white/10">
-                  <div className="px-3 py-3 sm:px-4">
-                    <p className="text-[11px] font-semibold text-text-medium">{t("screen.home.stats.streakLabel")}</p>
-                    <div className="mt-1 flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[18px] text-orange-500">local_fire_department</span>
-                      <span className="text-lg font-extrabold tracking-tight text-text-dark">{stats.currentStreakDays}</span>
-                    </div>
-                  </div>
-                  <div className="px-3 py-3 sm:px-4">
-                    <p className="text-[11px] font-semibold text-text-medium">{t("screen.home.targetLabel", { target: targetDays })}</p>
-                    <div className="mt-1 flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[18px] text-primary">track_changes</span>
-                      <span className="text-lg font-extrabold tracking-tight text-text-dark">{remainingDays}</span>
-                    </div>
-                    <p className="mt-1 text-[11px] font-semibold text-text-medium">{remainingLabel}</p>
-                  </div>
-                  <div className="px-3 py-3 sm:px-4">
-                    <p className="text-[11px] font-semibold text-text-medium">{t("screen.home.stats.pointsLabel")}</p>
-                    <div className="mt-1 flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[18px] text-emerald-600">emoji_events</span>
-                      <span className="text-lg font-extrabold tracking-tight text-text-dark">{stats.totalPoints}</span>
-                    </div>
-                    <p className="mt-1 text-[11px] font-semibold text-text-medium">{t("screen.home.stats.weeklyPoints", { points: stats.weeklyPoints })}</p>
-                  </div>
+          <div className="flex items-end justify-between gap-4">
+            <div className="flex items-baseline gap-3">
+              <span className="text-5xl font-extrabold tracking-tight text-primary sm:text-6xl">{progress}%</span>
+              <span className="text-sm font-semibold text-text-medium">{t("screen.home.weeklyProgressLabel", { completed: completedCount, total: targetDays })}</span>
+            </div>
+            <div className="hidden sm:flex h-10 w-10 items-center justify-center rounded-2xl bg-white/70 ring-1 ring-border-light/70 text-primary shadow-sm dark:bg-background-offwhite/30 dark:ring-white/10">
+              <span className="material-symbols-outlined text-[20px]">monitoring</span>
+            </div>
+          </div>
+
+          <div className="h-4 w-full overflow-hidden rounded-full bg-background-offwhite ring-1 ring-border-light/60 dark:bg-white/5 dark:ring-white/10">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-primary via-primary to-emerald-500 transition-all"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+
+          <div className="overflow-hidden rounded-2xl bg-background/70 shadow-sm ring-1 ring-border-light/70 backdrop-blur dark:bg-background-offwhite/10 dark:ring-white/10">
+            <div className="grid grid-cols-3 divide-x divide-border-light/70 dark:divide-white/10">
+              <div className="px-3 py-3 sm:px-4">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[11px] font-semibold text-text-medium">{t("screen.home.stats.streakLabel")}</p>
+                  <span className="material-symbols-outlined text-[16px] text-orange-500">local_fire_department</span>
                 </div>
+                <div className="mt-1 text-lg font-extrabold tracking-tight text-text-dark">{stats.currentStreakDays}</div>
+              </div>
+              <div className="px-3 py-3 sm:px-4">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[11px] font-semibold text-text-medium">{t("screen.home.targetLabel", { target: targetDays })}</p>
+                  <span className="material-symbols-outlined text-[16px] text-primary">track_changes</span>
+                </div>
+                <div className="mt-1 text-lg font-extrabold tracking-tight text-text-dark">{remainingDays}</div>
+                <div className="mt-0.5 text-[11px] font-semibold text-text-medium">{remainingLabel}</div>
+              </div>
+              <div className="px-3 py-3 sm:px-4">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[11px] font-semibold text-text-medium">{t("screen.home.stats.pointsLabel")}</p>
+                  <span className="material-symbols-outlined text-[16px] text-emerald-600">emoji_events</span>
+                </div>
+                <div className="mt-1 text-lg font-extrabold tracking-tight text-text-dark">{stats.totalPoints}</div>
+                <div className="mt-0.5 text-[11px] font-semibold text-text-medium">{t("screen.home.stats.weeklyPoints", { points: stats.weeklyPoints })}</div>
               </div>
             </div>
           </div>
 
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          {todayCard ? (
-            <Button asChild size="lg" className="h-auto rounded-2xl px-8 py-4 shadow-soft hover:bg-primary-dark">
-              <Link href={`/${params.locale}/app/reading/${todayCard.day}`}>
-                <span className="material-symbols-outlined text-[22px]">play_arrow</span>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            {todayCard ? (
+              <Button asChild size="lg" className="h-auto rounded-2xl px-8 py-4 shadow-soft hover:bg-primary-dark">
+                <Link href={`/${params.locale}/app/reading/${todayCard.day}`}>
+                  <span className="material-symbols-outlined text-[22px]">play_arrow</span>
                 {t("screen.home.ctaToday")}
               </Link>
             </Button>
@@ -278,6 +272,7 @@ export default async function WeeklyOverview({
               {t("action.viewAll")}
             </Link>
           </Button>
+        </div>
         </div>
       </section>
 
