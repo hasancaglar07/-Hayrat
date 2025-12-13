@@ -56,7 +56,7 @@ export default function ReadIndexPage({
   return (
     <div className="space-y-8">
       <Card className="rounded-3xl border-primary/15 bg-primary/5">
-        <CardContent className="p-8">
+        <CardContent className="p-5 sm:p-8">
           <h1 className="page-title text-primary">{title}</h1>
           <p className="mt-3 text-base text-text-medium">{guestIntro}</p>
           <div className="mt-4 flex flex-wrap items-center gap-2">

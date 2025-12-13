@@ -12,8 +12,8 @@ export default function PublicAppLayout({ children, params }: Props) {
   return (
     <div className="flex min-h-screen flex-col bg-transparent text-text-dark">
       <LandingNav locale={params.locale} t={t} />
-      <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="panel rounded-3xl p-5 ring-1 ring-border-light/70 backdrop-blur-sm sm:p-7 lg:p-8">
+      <main className="mx-auto w-full max-w-6xl px-0 py-8 sm:px-6 lg:px-8">
+        <div className="panel rounded-none p-4 ring-1 ring-border-light/70 backdrop-blur-sm sm:rounded-3xl sm:p-7 lg:p-8">
           {children}
         </div>
       </main>
@@ -21,4 +21,3 @@ export default function PublicAppLayout({ children, params }: Props) {
     </div>
   );
 }
-

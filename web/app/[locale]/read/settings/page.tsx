@@ -103,7 +103,7 @@ export default function ReadSettingsPage({
   return (
     <form action={saveSettings} className="space-y-8">
       <Card className="rounded-3xl border-primary/15 bg-primary/5">
-        <CardContent className="p-8">
+        <CardContent className="p-5 sm:p-8">
           <p className="text-sm font-semibold text-primary">{t.settings.reading.title}</p>
           <h1 className="page-title">{t.settings.reading.title}</h1>
           <p className="mt-2 text-sm text-text-medium">{infoText}</p>

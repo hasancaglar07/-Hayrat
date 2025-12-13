@@ -20,10 +20,10 @@ const setThemeCookie = (theme: ThemeOption) => {
 };
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<ThemeOption>("system");
+  const [theme, setTheme] = useState<ThemeOption>("light");
 
   useEffect(() => {
-    const stored = (localStorage.getItem("theme-preference") as ThemeOption | null) ?? "system";
+    const stored = (localStorage.getItem("theme-preference") as ThemeOption | null) ?? "light";
     setTheme(stored);
     applyTheme(stored);
     setThemeCookie(stored);

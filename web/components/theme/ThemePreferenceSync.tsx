@@ -21,7 +21,7 @@ const setThemeCookie = (theme: ThemeOption) => {
 
 export function ThemePreferenceSync({ preference }: { preference?: ThemeOption }) {
   useEffect(() => {
-    let next: ThemeOption = "system";
+    let next: ThemeOption = "light";
 
     if (preference) {
       next = preference;
@@ -32,7 +32,7 @@ export function ThemePreferenceSync({ preference }: { preference?: ThemeOption }
       }
     } else {
       try {
-        next = (localStorage.getItem("theme-preference") as ThemeOption | null) ?? "system";
+        next = (localStorage.getItem("theme-preference") as ThemeOption | null) ?? "light";
       } catch {
         // ignore
       }

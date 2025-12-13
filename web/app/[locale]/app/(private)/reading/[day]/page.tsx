@@ -154,7 +154,7 @@ export default async function ReadingPage({ params, searchParams }: { params: { 
   };
 
   return (
-    <div className="flex flex-col items-center px-4 py-6 md:py-8">
+    <div className="flex flex-col items-center px-0 py-6 sm:px-4 md:py-8">
       <AutoScroll enabled={settings.autoScroll} speed={settings.autoScrollSpeed} />
       <BookmarkSync dayId={day} date={date} />
         <div className={`w-full max-w-4xl overflow-hidden rounded-2xl border shadow-sm ${themeClasses}`}>
@@ -173,7 +173,7 @@ export default async function ReadingPage({ params, searchParams }: { params: { 
 
         <ScrollProgressBar />
 
-        <div className="space-y-12 p-6 md:p-10 lg:p-12">
+        <div className="space-y-12 p-4 sm:p-6 md:p-10 lg:p-12">
           <div className="flex justify-center">
             <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-micro font-bold uppercase tracking-wide text-primary">
               <span className="mr-2 h-2 w-2 animate-pulse rounded-full bg-primary" />

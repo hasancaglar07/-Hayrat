@@ -6,6 +6,7 @@ import { ThemePreferenceSync } from "@/components/theme/ThemePreferenceSync";
 import clsx from "clsx";
 import { Inter, Noto_Naskh_Arabic } from "next/font/google";
 import Script from "next/script";
+import { cookies } from "next/headers";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-YBRM9SWPNT";
 const GOOGLE_SITE_VERIFICATION =
@@ -39,6 +40,11 @@ export const metadata: Metadata = {
 const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-sans" });
 const notoNaskhArabic = Noto_Naskh_Arabic({ subsets: ["arabic"], display: "swap", variable: "--font-arabic", weight: ["400", "500", "600", "700"] });
 
+type ThemeOption = "light" | "dark" | "sepia" | "system";
+
+const isThemeOption = (value: unknown): value is ThemeOption =>
+  value === "light" || value === "dark" || value === "sepia" || value === "system";
+
 export default function RootLayout({
   children,
   params,
@@ -48,12 +54,19 @@ export default function RootLayout({
 }) {
   const locale = params?.locale && locales.includes(params.locale) ? params.locale : defaultLocale;
   const rtlLocales: Locale[] = ["ar", "ur"];
+  const themeCookie = cookies().get("theme-preference")?.value;
+  const themePreference: ThemeOption | undefined = isThemeOption(themeCookie) ? themeCookie : undefined;
 
   return (
     <html
       lang={locale}
       dir={rtlLocales.includes(locale) ? "rtl" : "ltr"}
-      className={clsx(inter.variable, notoNaskhArabic.variable)}
+      className={clsx(
+        inter.variable,
+        notoNaskhArabic.variable,
+        themePreference === "dark" && "dark",
+        themePreference === "sepia" && "sepia",
+      )}
       suppressHydrationWarning
     >
       <head>
@@ -75,7 +88,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen text-text-dark">
         <Script src="https://unpkg.com/lottie-web@5.12.2/build/player/lottie.min.js" strategy="afterInteractive" />
-        <ThemePreferenceSync />
+        <ThemePreferenceSync preference={themePreference} />
         {children}
       </body>
     </html>

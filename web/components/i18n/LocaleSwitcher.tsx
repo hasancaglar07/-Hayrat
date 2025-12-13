@@ -62,7 +62,7 @@ export function LocaleSwitcher({
         {open && (
           <div
             role="menu"
-            className="absolute right-0 mt-2 min-w-[4.5rem] rounded-2xl border border-border bg-background/95 p-1 text-micro font-semibold shadow-lg backdrop-blur"
+            className="absolute right-0 z-50 mt-2 max-h-[60vh] min-w-[4.5rem] overflow-y-auto rounded-2xl border border-border bg-background/95 p-1 text-micro font-semibold shadow-lg backdrop-blur"
           >
             {allLocales.map((loc) => (
               <Link
@@ -90,7 +90,7 @@ export function LocaleSwitcher({
   return (
     <div
       className={clsx(
-        "flex items-center gap-1 rounded-full border border-border bg-background/85 px-2 py-1 text-micro font-semibold text-foreground shadow-sm backdrop-blur",
+        "flex w-full max-w-full items-center gap-1 overflow-x-auto whitespace-nowrap rounded-full border border-border bg-background/85 px-2 py-1 text-micro font-semibold text-foreground shadow-sm backdrop-blur no-scrollbar",
         className,
       )}
     >

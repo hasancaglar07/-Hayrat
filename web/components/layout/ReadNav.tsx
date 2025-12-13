@@ -210,7 +210,7 @@ export function ReadNav({
             )}
 
             <div className="mt-3 flex justify-center">
-              <LocaleSwitcher />
+              <LocaleSwitcher variant="dropdown" className="flex" />
             </div>
           </div>
         </div>

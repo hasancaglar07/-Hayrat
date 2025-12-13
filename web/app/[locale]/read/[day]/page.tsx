@@ -123,7 +123,7 @@ export default function ReadDayPage({
 
         <ScrollProgressBar />
 
-        <div className="space-y-8 p-6 md:p-10 lg:p-12">
+        <div className="space-y-8 p-4 sm:p-6 md:p-10 lg:p-12">
           <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
             <p className="text-sm font-semibold text-primary">{isCompleted ? markedMessage : bannerText}</p>
             <div className="mt-3 flex flex-col gap-2 sm:flex-row">

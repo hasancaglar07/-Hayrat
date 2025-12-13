@@ -14,6 +14,7 @@ import { TimezoneInit } from "@/components/feedback/TimezoneInit";
 import { userTodayDateString } from "@/lib/core/userTime";
 import { getSchemaStatus } from "@/lib/data/schemaStatus";
 import { SupabaseSchemaNotice } from "@/components/feedback/SupabaseSchemaNotice";
+import { ThemePreferenceSync } from "@/components/theme/ThemePreferenceSync";
 
 type Props = { children: React.ReactNode; params: { locale: Locale } };
 
@@ -54,6 +55,7 @@ export default async function AppLayout({ children, params }: Props) {
 
   return (
     <div className="flex min-h-screen flex-col bg-transparent">
+      <ThemePreferenceSync preference={appSettings.themePreference ?? "system"} />
       <TimezoneInit />
       <AppNav
         brand={t("app.name")}
@@ -74,8 +76,8 @@ export default async function AppLayout({ children, params }: Props) {
         notificationTime={notificationTime}
         missedCount={missedLast30.length}
       />
-      <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="panel rounded-3xl p-5 ring-1 ring-border-light/70 backdrop-blur-sm sm:p-7 lg:p-8">
+      <main className="mx-auto w-full max-w-6xl px-0 py-8 sm:px-6 lg:px-8">
+        <div className="panel rounded-none p-4 ring-1 ring-border-light/70 backdrop-blur-sm sm:rounded-3xl sm:p-7 lg:p-8">
           <div className="mb-6">
             <SupabaseSchemaNotice status={schemaStatus} locale={params.locale} />
           </div>

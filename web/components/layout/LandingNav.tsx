@@ -192,7 +192,7 @@ export function LandingNav({ locale, t }: { locale: Locale; t: Messages }) {
               </Link>
             )}
             <div className="mt-3 flex justify-center">
-              <LocaleSwitcher />
+              <LocaleSwitcher variant="dropdown" className="flex" />
             </div>
           </div>
         </div>
