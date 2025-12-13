@@ -16,7 +16,7 @@ import { getSchemaStatus } from "@/lib/data/schemaStatus";
 import { SupabaseSchemaNotice } from "@/components/feedback/SupabaseSchemaNotice";
 import { ThemePreferenceSync } from "@/components/theme/ThemePreferenceSync";
 
-type Props = { children: React.ReactNode; params: { locale: Locale } };
+type Props = { children: React.ReactNode; modal: React.ReactNode; params: { locale: Locale } };
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function AppLayout({ children, params }: Props) {
+export default async function AppLayout({ children, modal, params }: Props) {
   const user = await getCurrentUser();
   if (!user) {
     return <AppGate locale={params.locale} nextPath={`/${params.locale}/app`} />;
@@ -85,6 +85,7 @@ export default async function AppLayout({ children, params }: Props) {
         </div>
       </main>
       <Footer locale={params.locale} />
+      {modal}
     </div>
   );
 }

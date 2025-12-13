@@ -3,6 +3,7 @@
 import Image from "next/image";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
+import type { AnimationItem } from "lottie-web";
 
 type LogoMarkProps = {
   alt: string;
@@ -25,7 +26,7 @@ export function LogoMark({
     if (!containerRef.current) return;
 
     let cancelled = false;
-    let animation: { destroy: () => void; addEventListener?: (event: string, cb: () => void) => void } | null = null;
+    let animation: AnimationItem | null = null;
 
     const prefersReducedMotion =
       typeof window !== "undefined" &&

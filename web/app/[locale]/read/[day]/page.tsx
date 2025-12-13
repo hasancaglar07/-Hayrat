@@ -75,6 +75,9 @@ export default function ReadDayPage({
 
   const headerTitleClasses = settings.theme === "dark" ? "text-lg font-bold text-white" : "text-lg font-bold text-[#0c1d1b]";
 
+  const returnTo = `/${params.locale}/read/${day}`;
+  const settingsHref = `/${params.locale}/read/settings?next=${encodeURIComponent(returnTo)}`;
+
   const nextTrackPath = `/${params.locale}/app/reading/${day}`;
   const signInHref = `/${params.locale}/auth?next=${encodeURIComponent(nextTrackPath)}`;
   const bannerText =
@@ -116,7 +119,7 @@ export default function ReadDayPage({
           <h1 className={headerTitleClasses}>
             {t(`weekday.${day}`)} · {t("screen.reading.title")}
           </h1>
-          <Link className={headerLinkClasses} href={`/${params.locale}/read/settings`} aria-label={messages.settings.reading.title}>
+          <Link className={headerLinkClasses} href={settingsHref} aria-label={messages.settings.reading.title}>
             <span className="material-symbols-outlined">settings</span>
           </Link>
         </div>
@@ -131,7 +134,7 @@ export default function ReadDayPage({
                 <Link href={signInHref}>{messages.nav.signIn}</Link>
               </Button>
               <Button asChild variant="outline" className="rounded-xl">
-                <Link href={`/${params.locale}/read/settings`}>{messages.settings.reading.title}</Link>
+                <Link href={settingsHref}>{messages.settings.reading.title}</Link>
               </Button>
             </div>
           </div>
@@ -180,7 +183,7 @@ export default function ReadDayPage({
               </form>
             )}
             <Button asChild variant="outline" className="rounded-xl">
-              <Link href={`/${params.locale}/read/settings`}>{messages.reading.openSettings}</Link>
+              <Link href={settingsHref}>{messages.reading.openSettings}</Link>
             </Button>
           </div>
         </div>

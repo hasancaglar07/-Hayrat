@@ -4,7 +4,15 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 
-export function RouteModal({ children, className }: { children: React.ReactNode; className?: string }) {
+export function RouteModal({
+  children,
+  className,
+  contentClassName,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  contentClassName?: string;
+}) {
   const router = useRouter();
 
   useEffect(() => {
@@ -33,7 +41,10 @@ export function RouteModal({ children, className }: { children: React.ReactNode;
       />
       <div className={clsx("absolute inset-0 flex items-end justify-center p-3 sm:items-center sm:p-6", className)}>
         <div
-          className="relative w-full max-w-2xl max-h-[92vh] overflow-auto rounded-3xl border border-border bg-background shadow-2xl"
+          className={clsx(
+            "relative w-full max-h-[92vh] overflow-auto rounded-3xl border border-border bg-background shadow-2xl",
+            contentClassName ?? "max-w-2xl",
+          )}
           onClick={(e) => e.stopPropagation()}
         >
           <button
@@ -50,4 +61,3 @@ export function RouteModal({ children, className }: { children: React.ReactNode;
     </div>
   );
 }
-

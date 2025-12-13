@@ -32,7 +32,7 @@ export default function ReadSettingsPage({
   searchParams,
 }: {
   params: { locale: Locale };
-  searchParams?: { saved?: string; reset?: string };
+  searchParams?: { saved?: string; reset?: string; next?: string };
 }) {
   const t = getMessages(params.locale);
   const anyT = t as unknown as { settings?: { reading?: { autoScrollSpeed?: string } } };
@@ -91,17 +91,22 @@ export default function ReadSettingsPage({
       maxAge: 60 * 60 * 24 * 365,
     });
 
-    redirect(`/${params.locale}/read/settings?saved=1`);
+    const rawNext = formData.get("next");
+    const next = typeof rawNext === "string" && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
+    redirect(next ?? `/${params.locale}/read/settings?saved=1`);
   };
 
-  const resetProgress = async () => {
+  const resetProgress = async (formData: FormData) => {
     "use server";
     clearGuestReadingProgress();
-    redirect(`/${params.locale}/read/settings?reset=1`);
+    const rawNext = formData.get("next");
+    const next = typeof rawNext === "string" && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
+    redirect(next ?? `/${params.locale}/read/settings?reset=1`);
   };
 
   return (
     <form action={saveSettings} className="space-y-8">
+      <input type="hidden" name="next" value={searchParams?.next ?? ""} />
       <Card className="rounded-3xl border-primary/15 bg-primary/5">
         <CardContent className="p-5 sm:p-8">
           <p className="text-sm font-semibold text-primary">{t.settings.reading.title}</p>

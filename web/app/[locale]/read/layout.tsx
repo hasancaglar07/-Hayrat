@@ -8,7 +8,7 @@ type Props = { children: React.ReactNode; modal: React.ReactNode; params: { loca
 
 export const dynamic = "force-dynamic";
 
-export default function ReadLayout({ children, params }: Props) {
+export default function ReadLayout({ children, modal, params }: Props) {
   const t = getMessages(params.locale);
   const mobileT = getMobileT(params.locale);
   const readLabel = mobileT("screen.reading.title", { defaultValue: "Read" });

@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import { useEffect, useRef, useState } from "react";
 import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
@@ -39,6 +39,7 @@ export function AppNav({
   signOutLabel?: string;
 }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -113,10 +114,12 @@ export function AppNav({
               <div className="mx-auto flex w-max items-center gap-2">
                 {items.map((item) => {
                   const active = pathname.startsWith(item.href);
+                  const current = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
+                  const href = item.href === `/${locale}/app/settings` ? `${item.href}?next=${encodeURIComponent(current)}` : item.href;
                   return (
                     <Link
                       key={item.href}
-                      href={item.href}
+                      href={href}
                       prefetch={false}
                       className={clsx(
                         "inline-flex h-10 items-center gap-2 rounded-lg px-3.5 text-base font-medium transition-colors whitespace-nowrap",
@@ -153,10 +156,12 @@ export function AppNav({
             ) : null}
             {actions?.map((action) => {
               const active = pathname.startsWith(action.href);
+              const current = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
+              const href = action.href === `/${locale}/app/settings` ? `${action.href}?next=${encodeURIComponent(current)}` : action.href;
               return (
                 <Link
                   key={action.href}
-                  href={action.href}
+                  href={href}
                   prefetch={false}
                   className={clsx(
                     "inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white/60 text-text-dark shadow-soft ring-1 ring-border-light/70 backdrop-blur transition-colors hover:bg-white hover:text-primary dark:bg-background-offwhite/60 dark:text-white dark:ring-white/10 dark:hover:bg-background-offwhite",
@@ -213,10 +218,12 @@ export function AppNav({
           <div className="page-section flex flex-col gap-1 py-4">
             {items.map((item) => {
               const active = pathname.startsWith(item.href);
+              const current = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
+              const href = item.href === `/${locale}/app/settings` ? `${item.href}?next=${encodeURIComponent(current)}` : item.href;
               return (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={href}
                   prefetch={false}
                   className={clsx(
                     "flex items-center justify-between rounded-xl px-3 py-3 text-base font-semibold",

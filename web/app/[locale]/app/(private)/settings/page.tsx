@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: { locale: Locale } 
   });
 }
 
-export default async function SettingsPage({ params }: { params: { locale: Locale } }) {
+export default async function SettingsPage({ params, searchParams }: { params: { locale: Locale }; searchParams?: { next?: string } }) {
   const t = getMessages(params.locale);
   const anyT = t as unknown as {
     settings?: {
@@ -91,11 +91,22 @@ export default async function SettingsPage({ params }: { params: { locale: Local
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 365,
     });
-    redirect(`/${language}/app/settings`);
+
+    const rawNext = formData.get("next");
+    const nextBase = typeof rawNext === "string" && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
+    if (!nextBase) {
+      redirect(`/${language}/app/settings`);
+    }
+
+    const parts = nextBase.split("/");
+    const nextLocale = parts.length > 2 && allowedLocales.includes(parts[1]) ? parts[1] : null;
+    const next = nextLocale ? `/${language}/${parts.slice(2).join("/")}` : nextBase;
+    redirect(next);
   };
 
   return (
     <form action={saveSettings} className="space-y-8">
+      <input type="hidden" name="next" value={searchParams?.next ?? ""} />
       <Card>
 	        <CardContent className="p-6">
 	        <div className="mb-4">

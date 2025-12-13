@@ -80,6 +80,9 @@ export default async function ReadingPage({ params, searchParams }: { params: { 
 
   const headerTitleClasses = settings.theme === "dark" ? "text-lg font-bold text-white" : "text-lg font-bold text-[#0c1d1b]";
 
+  const returnTo = `/${params.locale}/app/reading/${day}?mode=${mode}&date=${date}`;
+  const settingsHref = `/${params.locale}/app/settings?next=${encodeURIComponent(returnTo)}`;
+
   const completeReading = async (formData: FormData) => {
     "use server";
     const appHref = `/${params.locale}/app`;
@@ -166,7 +169,7 @@ export default async function ReadingPage({ params, searchParams }: { params: { 
           <h1 className={headerTitleClasses}>
             {t(`weekday.${day}`)} · {mode === "makeup" ? t("screen.reading.mode.makeup") : t("screen.reading.mode.today")}
           </h1>
-          <a className={headerLinkClasses} href={`/${params.locale}/app/settings`}>
+          <a className={headerLinkClasses} href={settingsHref}>
             <span className="material-symbols-outlined">settings</span>
           </a>
         </div>
@@ -217,7 +220,7 @@ export default async function ReadingPage({ params, searchParams }: { params: { 
             </form>
             <a
               className="flex w-full items-center justify-center gap-2 rounded-xl border border-primary px-6 py-3.5 text-base font-semibold text-primary transition-colors hover:bg-primary/5"
-              href={`/${params.locale}/app/settings`}
+              href={settingsHref}
             >
               <span className="material-symbols-outlined text-lg">tune</span>
               {t("screen.reading.settingsButton")}

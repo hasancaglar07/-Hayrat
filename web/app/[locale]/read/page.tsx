@@ -65,7 +65,7 @@ export default function ReadIndexPage({
           </div>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="h-auto rounded-2xl px-7 py-4 shadow-soft hover:bg-primary-dark">
-              <Link href={`/${params.locale}/read/settings`}>{messages.settings.reading.title}</Link>
+              <Link href={`/${params.locale}/read/settings?next=${encodeURIComponent(`/${params.locale}/read`)}`}>{messages.settings.reading.title}</Link>
             </Button>
             <Button
               asChild

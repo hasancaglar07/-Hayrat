@@ -96,7 +96,7 @@ export function ReadNav({
 
   const items = [
     { href: `/${locale}/read`, label: readLabel },
-    { href: `/${locale}/read/settings`, label: settingsLabel },
+    { href: `/${locale}/read/settings?next=${encodeURIComponent(pathname)}`, label: settingsLabel },
     { href: `/${locale}/app/about`, label: t.nav.about },
     { href: `/${locale}/app/info/faq`, label: t.nav.faq },
     { href: `/${locale}/app/donate`, label: t.nav.donate },

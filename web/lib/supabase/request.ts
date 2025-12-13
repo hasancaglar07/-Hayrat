@@ -19,12 +19,16 @@ export const createSupabaseRequestClient = (
         return request.cookies.get(name)?.value;
       },
       set(name: string, value: string, options: CookieOptions) {
-        response.cookies.set({ name, value, ...(options as Record<string, any>) });
+        response.cookies.set({ name, value, ...(options as Record<string, unknown>) });
       },
       remove(name: string, options: CookieOptions) {
-        response.cookies.set({ name, value: "", ...(options as Record<string, any>), maxAge: 0 });
+        response.cookies.set({
+          name,
+          value: "",
+          ...(options as Record<string, unknown>),
+          maxAge: 0,
+        });
       },
     },
   });
 };
-
