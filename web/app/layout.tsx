@@ -7,12 +7,19 @@ import clsx from "clsx";
 import { Inter, Noto_Naskh_Arabic } from "next/font/google";
 import Script from "next/script";
 
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-YBRM9SWPNT";
+const GOOGLE_SITE_VERIFICATION =
+  process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "HpkWJ6a3Q0TTosqNLadZYFdlSYfr0s_k1IPX6Z8UbG8";
+
 export const metadata: Metadata = {
   metadataBase,
   title: "Delailül Hayrat Web",
   description: "Delailül Hayrat okumanı web üzerinden düzenli şekilde takip et.",
   applicationName: "Delail-i Hayrat Takip",
   category: "religion",
+  verification: {
+    google: GOOGLE_SITE_VERIFICATION,
+  },
   openGraph: {
     type: "website",
     siteName: "Delail-i Hayrat",
@@ -50,6 +57,15 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_ID}');
+          `}
+        </Script>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

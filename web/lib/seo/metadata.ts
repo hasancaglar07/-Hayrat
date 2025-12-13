@@ -1,7 +1,23 @@
 import type { Metadata } from "next";
 import { locales, type Locale } from "@/i18n/config";
 
-const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const PRODUCTION_SITE_URL = "https://www.delailalkhayrat.com";
+
+function resolveSiteUrl() {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  const isConfiguredLocalhost =
+    !!configured &&
+    (configured.includes("localhost") || configured.includes("127.0.0.1") || configured.includes("0.0.0.0"));
+
+  if (configured && !(process.env.NODE_ENV === "production" && isConfiguredLocalhost)) return configured;
+
+  const vercelUrl = process.env.VERCEL_URL?.trim();
+  if (vercelUrl) return `https://${vercelUrl}`;
+
+  return process.env.NODE_ENV === "production" ? PRODUCTION_SITE_URL : "http://localhost:3000";
+}
+
+const rawSiteUrl = resolveSiteUrl();
 export const siteUrl = rawSiteUrl.endsWith("/") ? rawSiteUrl.slice(0, -1) : rawSiteUrl;
 export const metadataBase = new URL(siteUrl);
 
@@ -45,6 +61,7 @@ export function createPageMetadata({
   type?: "website" | "article";
 }): Metadata {
   const alternates = buildAlternates(locale, path);
+  const canonicalUrl = new URL(alternates.canonical, metadataBase).toString();
 
   return {
     title,
@@ -56,7 +73,7 @@ export function createPageMetadata({
       type,
       title,
       description,
-      url: alternates.canonical,
+      url: canonicalUrl,
       siteName: "Delail-i Hayrat",
       images,
     },
@@ -71,4 +88,3 @@ export function createPageMetadata({
       : { index: true, follow: true },
   };
 }
-

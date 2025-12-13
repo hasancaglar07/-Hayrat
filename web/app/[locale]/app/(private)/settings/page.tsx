@@ -1,6 +1,6 @@
-import { revalidatePath } from "next/cache";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { getMessages, type Locale } from "@/i18n/config";
 import { supportedMobileLocales } from "@/i18n/mobile";
 import { createPageMetadata } from "@/lib/seo/metadata";
@@ -50,7 +50,8 @@ export default async function SettingsPage({ params }: { params: { locale: Local
   const saveSettings = async (formData: FormData) => {
     "use server";
     const rawLanguage = String(formData.get("language") ?? params.locale);
-    const language = (languageOptions.includes(rawLanguage) ? rawLanguage : defaultAppSettings.language) as Locale;
+    const allowedLocales = supportedMobileLocales as readonly string[];
+    const language = (allowedLocales.includes(rawLanguage) ? rawLanguage : defaultAppSettings.language) as Locale;
     const notificationsEnabled = formData.get("notificationsEnabled") === "on";
     const remindMissedDays = formData.get("remindMissedDays") === "on";
     const notificationTime = (formData.get("notificationTime") as string) || defaultAppSettings.notificationTime;
@@ -86,7 +87,7 @@ export default async function SettingsPage({ params }: { params: { locale: Local
     });
 
     cookies().set("theme-preference", themePreference ?? "system", { path: "/", sameSite: "lax" });
-    revalidatePath(`/${params.locale}/app/settings`);
+    redirect(`/${language}/app/settings`);
   };
 
   return (

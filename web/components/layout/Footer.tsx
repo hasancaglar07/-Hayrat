@@ -174,6 +174,18 @@ export function Footer({ locale, variant = "default" }: { locale: Locale; varian
             © {year} {t.brand}. {t.footer.bottom.rights}
           </span>
           <span className="text-center">{t.footer.bottom.description}</span>
+          <a
+            href="https://verenel.org/"
+            target="_blank"
+            rel="noreferrer"
+            className="group inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-text-medium transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            aria-label="Verenel sponsor"
+          >
+            <Image src="/verenel.svg" alt="Verenel" width={96} height={24} className="h-5 w-auto" />
+            <span className="text-micro font-semibold tracking-wide text-text-light group-hover:text-text-medium">
+              sponsored
+            </span>
+          </a>
         </div>
       </div>
     </footer>
