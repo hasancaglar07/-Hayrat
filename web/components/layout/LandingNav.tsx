@@ -60,7 +60,7 @@ export function LandingNav({ locale, t }: { locale: Locale; t: Messages }) {
       <div className="liquid-nav relative z-10 w-full overflow-visible">
         <div className="nav-section grid h-[72px] grid-cols-[auto_1fr_auto] items-center gap-x-3 sm:h-[84px] sm:gap-x-4 md:grid-cols-[1fr_auto_1fr]">
           <Link href={`/${locale}`} className="flex items-center shrink-0 gap-3 md:justify-self-start">
-            <LogoMark alt={t.brand} className="h-14 w-14 drop-shadow-sm sm:h-[72px] sm:w-[72px]" />
+            <LogoMark alt={t.brand} className="h-16 w-16 drop-shadow-sm sm:h-20 sm:w-20" />
             <span className="sr-only">{t.brand}</span>
             <span className="hidden max-w-[12rem] truncate sm:block logo-text">
               <span className="logo-accent">{t.brand}</span>

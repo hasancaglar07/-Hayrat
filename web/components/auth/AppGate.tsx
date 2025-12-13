@@ -1,10 +1,11 @@
 import Link from "next/link";
-import Image from "next/image";
 import type { Locale } from "@/i18n/config";
 import { getMessages } from "@/i18n/config";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { LogoMark } from "@/components/media/LogoMark";
+import { AuthAutoRedirect } from "@/components/auth/AuthAutoRedirect";
 
 const isSafeInternalPath = (value: unknown): value is string => {
   if (typeof value !== "string") return false;
@@ -21,17 +22,10 @@ export function AppGate({ locale, nextPath }: { locale: Locale; nextPath?: strin
   return (
     <div className="flex min-h-screen flex-col bg-transparent text-text-dark">
       <header className="sticky top-0 z-40 w-full">
-        <div className="liquid-nav relative z-10 w-full overflow-visible">
+          <div className="liquid-nav relative z-10 w-full overflow-visible">
           <div className="nav-section grid h-[72px] grid-cols-[auto_1fr_auto] items-center gap-x-3 sm:h-[84px] sm:gap-x-4">
             <Link href={`/${locale}`} className="flex items-center shrink-0 gap-3">
-              <Image
-                src="/images/logo2.png"
-                alt={t.brand}
-                width={72}
-                height={72}
-                priority
-                className="h-14 w-14 rounded-2xl object-contain ring-1 ring-primary/20 shadow-glow sm:h-[72px] sm:w-[72px]"
-              />
+              <LogoMark alt={t.brand} className="h-16 w-16 rounded-2xl ring-1 ring-primary/20 shadow-glow sm:h-20 sm:w-20" />
               <span className="sr-only">{t.brand}</span>
               <span className="hidden max-w-[12rem] truncate sm:block logo-text">
                 <span className="logo-accent">{t.brand}</span>
@@ -52,6 +46,7 @@ export function AppGate({ locale, nextPath }: { locale: Locale; nextPath?: strin
 
       <main className="mx-auto w-full max-w-6xl px-0 py-8 sm:px-6 lg:px-8">
         <div className="space-y-6">
+          <AuthAutoRedirect locale={locale} nextPath={next} />
           <Card className="rounded-3xl border-primary/15 bg-primary/5">
             <CardContent className="p-5 sm:p-8">
               <h1 className="page-title text-primary">{t.footer.sections.app.links.app}</h1>

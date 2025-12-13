@@ -4,7 +4,7 @@ import { getMobileT } from "@/i18n/mobile";
 import { ReadNav } from "@/components/layout/ReadNav";
 import { Footer } from "@/components/layout/Footer";
 
-type Props = { children: React.ReactNode; params: { locale: Locale } };
+type Props = { children: React.ReactNode; modal: React.ReactNode; params: { locale: Locale } };
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +29,7 @@ export default function ReadLayout({ children, params }: Props) {
         </div>
       </main>
       <Footer locale={params.locale} variant="guest" />
+      {modal}
     </div>
   );
 }

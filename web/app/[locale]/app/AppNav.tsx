@@ -4,7 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { Locale } from "@/i18n/config";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 import { supportedMobileLocales } from "@/i18n/mobile";
 import { LogoMark } from "@/components/media/LogoMark";
@@ -41,9 +41,41 @@ export function AppNav({
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastScrollY = useRef(0);
   const [signingOut, setSigningOut] = useState(false);
 
   useEffect(() => setMenuOpen(false), [pathname]);
+
+  const isReadingFocus = pathname.startsWith(`/${locale}/app/reading/`);
+
+  useEffect(() => {
+    if (!isReadingFocus || menuOpen) {
+      setHidden(false);
+      return;
+    }
+
+    lastScrollY.current = window.scrollY;
+    let ticking = false;
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const delta = y - lastScrollY.current;
+        const nearTop = y < 24;
+        if (nearTop) setHidden(false);
+        else if (delta > 8) setHidden(true);
+        else if (delta < -8) setHidden(false);
+        lastScrollY.current = y;
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isReadingFocus, menuOpen]);
 
   const signOut = async () => {
     if (signingOut) return;
@@ -58,11 +90,18 @@ export function AppNav({
   };
 
   return (
-    <nav className="sticky top-0 z-40 w-full">
+    <nav
+      className={clsx(
+        "sticky top-0 z-40 w-full transition-[max-height,opacity] duration-200",
+        hidden
+          ? "max-h-0 overflow-hidden opacity-0 pointer-events-none md:max-h-none md:opacity-100 md:pointer-events-auto md:overflow-visible"
+          : "max-h-[1000px] opacity-100",
+      )}
+    >
       <div className="liquid-nav relative z-10 w-full overflow-visible">
         <div className="nav-section grid h-[72px] grid-cols-[auto_1fr_auto] items-center gap-x-3 sm:h-[84px] sm:gap-x-4 md:grid-cols-[1fr_auto_1fr]">
-          <Link prefetch={false} href={`/${locale}/app`} className="flex items-center shrink-0 gap-3 md:justify-self-start">
-            <LogoMark alt={brand} className="h-14 w-14 drop-shadow-sm sm:h-[72px] sm:w-[72px]" />
+          <Link prefetch={false} href={`/${locale}`} className="flex items-center shrink-0 gap-3 md:justify-self-start">
+            <LogoMark alt={brand} className="h-16 w-16 drop-shadow-sm sm:h-20 sm:w-20" />
             <span className="sr-only">{brand}</span>
             <span className="hidden max-w-[12rem] truncate sm:block logo-text">
               <span className="logo-accent">{brand}</span>

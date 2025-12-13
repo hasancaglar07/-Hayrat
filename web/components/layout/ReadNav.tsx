@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import type { Messages } from "@/i18n/messages/tr";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 import { LogoMark } from "@/components/media/LogoMark";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -27,11 +27,43 @@ export function ReadNav({
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastScrollY = useRef(0);
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [session, setSession] = useState<Session | null>(null);
   const [signingOut, setSigningOut] = useState(false);
 
   useEffect(() => setOpen(false), [pathname]);
+
+  const isReadingFocus = pathname.startsWith(`/${locale}/read/`) && !pathname.startsWith(`/${locale}/read/settings`);
+
+  useEffect(() => {
+    if (!isReadingFocus || open) {
+      setHidden(false);
+      return;
+    }
+
+    lastScrollY.current = window.scrollY;
+    let ticking = false;
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const delta = y - lastScrollY.current;
+        const nearTop = y < 24;
+        if (nearTop) setHidden(false);
+        else if (delta > 8) setHidden(true);
+        else if (delta < -8) setHidden(false);
+        lastScrollY.current = y;
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isReadingFocus, open]);
 
   useEffect(() => {
     let mounted = true;
@@ -71,12 +103,19 @@ export function ReadNav({
   ];
 
   return (
-    <nav className="sticky top-0 z-50 w-full">
+    <nav
+      className={clsx(
+        "sticky top-0 z-50 w-full transition-[max-height,opacity] duration-200",
+        hidden
+          ? "max-h-0 overflow-hidden opacity-0 pointer-events-none md:max-h-none md:opacity-100 md:pointer-events-auto md:overflow-visible"
+          : "max-h-[1000px] opacity-100",
+      )}
+    >
       <div className="liquid-nav relative z-10 w-full overflow-visible">
         <div className="nav-section grid h-[72px] grid-cols-[auto_1fr_auto] items-center gap-x-3 sm:h-[84px] sm:gap-x-4 md:grid-cols-[1fr_auto_1fr]">
           <div className="flex items-center gap-3 md:justify-self-start">
             <Link href={`/${locale}`} className="flex items-center shrink-0 gap-3">
-              <LogoMark alt={t.brand} className="h-14 w-14 drop-shadow-sm sm:h-[72px] sm:w-[72px]" />
+              <LogoMark alt={t.brand} className="h-16 w-16 drop-shadow-sm sm:h-20 sm:w-20" />
               <span className="sr-only">{t.brand}</span>
               <span className="hidden max-w-[12rem] truncate sm:block logo-text">
                 <span className="logo-accent">{t.brand}</span>

@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 export default async function AppLayout({ children, params }: Props) {
   const user = await getCurrentUser();
   if (!user) {
-    return <AppGate locale={params.locale} />;
+    return <AppGate locale={params.locale} nextPath={`/${params.locale}/app`} />;
   }
   const t = getMobileT(params.locale);
   const webT = getMessages(params.locale);

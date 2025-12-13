@@ -9,7 +9,7 @@ const defaultReadingSettings: ReadingSettings = {
   autoScrollSpeed: 40,
   screenLock: false,
   hapticsEnabled: true,
-  contentLanguages: ["arabic", "transliteration", "tr"],
+  contentLanguages: ["tr"],
 };
 
 const defaultAppSettings: AppSettings = {
@@ -24,10 +24,9 @@ const defaultAppSettings: AppSettings = {
 };
 
 const normalizeContentLanguages = (langs: ContentLanguage[] | undefined, appLanguage: AppSettings["language"]): ContentLanguage[] => {
-  const base: ContentLanguage[] = ["arabic", "transliteration"];
-  const unique = Array.from(new Set([...(langs || []), ...base].filter(Boolean))) as ContentLanguage[];
+  const unique = Array.from(new Set([...(langs || [])].filter(Boolean))) as ContentLanguage[];
   if (unique.length > 0) return unique;
-  return [...base, appLanguage];
+  return [appLanguage];
 };
 
 type ReadingSettingsRowShape = {
@@ -42,8 +41,8 @@ const deriveContentLanguagesFromRow = (row: ReadingSettingsRowShape | null | und
     return normalizeContentLanguages(row.content_languages as ContentLanguage[], appLanguage);
   }
   const list: ContentLanguage[] = [];
-  const showArabic = typeof row?.show_arabic === "boolean" ? row.show_arabic : true;
-  const showTransliteration = typeof row?.show_transliteration === "boolean" ? row.show_transliteration : true;
+  const showArabic = typeof row?.show_arabic === "boolean" ? row.show_arabic : false;
+  const showTransliteration = typeof row?.show_transliteration === "boolean" ? row.show_transliteration : false;
   const showTranslation = typeof row?.show_translation === "boolean" ? row.show_translation : true;
   if (showArabic) list.push("arabic");
   if (showTransliteration) list.push("transliteration");
@@ -86,7 +85,7 @@ const fetchUserSettingsWithClient = async (
         hapticsEnabled: Boolean(readingRes.data.haptics_enabled ?? defaultReadingSettings.hapticsEnabled),
         contentLanguages: deriveContentLanguagesFromRow(readingRes.data, appSettings.language),
       }
-    : defaultReadingSettings;
+    : { ...defaultReadingSettings, contentLanguages: [appSettings.language] };
 
   return { appSettings, readingSettings };
 };

@@ -137,7 +137,11 @@ export function AuthWidget({
   }, [status]);
 
   const resolveNextPath = () => {
-    return redirectTo?.startsWith("/") ? redirectTo : `/${locale}/app`;
+    const fallback = `/${locale}/app`;
+    if (!redirectTo?.startsWith("/")) return fallback;
+    // Keep Google sign-in focused on the tracking app to avoid landing-page loops.
+    if (!redirectTo.startsWith(`/${locale}/app`)) return fallback;
+    return redirectTo;
   };
 
   const buildCallbackRedirectUrl = () => {

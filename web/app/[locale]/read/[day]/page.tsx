@@ -107,7 +107,7 @@ export default function ReadDayPage({
     <div className="flex flex-col items-center">
       <AutoScroll enabled={settings.autoScroll} speed={settings.autoScrollSpeed} />
 
-      <div className={`w-full max-w-4xl overflow-hidden rounded-2xl border shadow-sm ${themeClasses}`}>
+      <div className={`w-full max-w-4xl overflow-hidden rounded-none border shadow-sm sm:rounded-2xl ${themeClasses}`}>
         <div className={`flex min-h-16 items-center justify-between border-b px-4 py-2 backdrop-blur-md ${headerClasses}`}>
           <Link className={headerLinkClasses} href={`/${params.locale}/read`}>
             <span className="material-symbols-outlined">arrow_back</span>
@@ -147,7 +147,7 @@ export default function ReadDayPage({
                       {section.arabicText}
                     </p>
                   ) : null}
-                  <div className="mt-2 flex flex-col gap-2 border-l-2 border-primary/20 pl-4">
+                  <div className="mt-2 flex flex-col gap-2 border-l-0 border-primary/20 pl-0 sm:border-l-2 sm:pl-4">
                     {showTransliteration && section.transliteration ? (
                       <p className="text-base font-medium text-current opacity-90" style={textStyle}>
                         {section.transliteration}

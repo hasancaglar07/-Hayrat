@@ -42,8 +42,8 @@ export default async function SettingsPage({ params }: { params: { locale: Local
   const { appSettings, readingSettings } = await getUserSettings(userId);
   const languageOptions = supportedMobileLocales as readonly string[];
   const selectedLanguage = languageOptions.includes(appSettings.language) ? appSettings.language : defaultAppSettings.language;
-  const showArabicDefault = readingSettings.contentLanguages?.includes("arabic") ?? true;
-  const showTransliterationDefault = readingSettings.contentLanguages?.includes("transliteration") ?? true;
+  const showArabicDefault = readingSettings.contentLanguages?.includes("arabic") ?? false;
+  const showTransliterationDefault = readingSettings.contentLanguages?.includes("transliteration") ?? false;
   const showTranslationDefault =
     readingSettings.contentLanguages?.some((l) => l !== "arabic" && l !== "transliteration") ?? true;
 

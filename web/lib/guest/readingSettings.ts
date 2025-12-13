@@ -26,7 +26,7 @@ const buildContentLanguages = (locale: Locale, opts: { showArabic: boolean; show
   if (opts.showArabic) langs.push("arabic");
   if (opts.showTransliteration) langs.push("transliteration");
   if (opts.showTranslation) langs.push(locale as ContentLanguage);
-  return langs.length ? langs : ["arabic", "transliteration", locale as ContentLanguage];
+  return langs.length ? langs : [locale as ContentLanguage];
 };
 
 export const getDefaultGuestReadingSettings = (locale: Locale): ReadingSettings => {
@@ -84,4 +84,3 @@ export const getGuestReadingSettings = (locale: Locale): ReadingSettings => {
     return defaults;
   }
 };
-
