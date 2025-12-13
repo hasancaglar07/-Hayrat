@@ -110,7 +110,9 @@ export default function ReadDayPage({
     <div className="flex flex-col items-center">
       <AutoScroll enabled={settings.autoScroll} speed={settings.autoScrollSpeed} />
 
-      <div className={`w-full max-w-4xl -mx-4 overflow-hidden rounded-none border shadow-sm sm:mx-0 sm:rounded-2xl ${themeClasses}`}>
+      <div
+        className={`relative left-1/2 w-screen -translate-x-1/2 overflow-hidden rounded-none border-0 shadow-none sm:static sm:left-auto sm:w-full sm:translate-x-0 sm:max-w-4xl sm:rounded-2xl sm:border sm:shadow-sm ${themeClasses}`}
+      >
         <div className={`flex min-h-16 items-center justify-between border-b px-4 py-2 backdrop-blur-md ${headerClasses}`}>
           <Link className={headerLinkClasses} href={`/${params.locale}/read`}>
             <span className="material-symbols-outlined">arrow_back</span>
