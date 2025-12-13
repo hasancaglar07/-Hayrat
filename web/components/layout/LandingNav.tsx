@@ -59,12 +59,13 @@ export function LandingNav({ locale, t }: { locale: Locale; t: Messages }) {
     <nav className="sticky top-0 z-50 w-full">
       <div className="liquid-nav relative z-10 w-full overflow-visible">
         <div className="nav-section grid h-[72px] grid-cols-[auto_1fr_auto] items-center gap-x-3 sm:h-[84px] sm:gap-x-4 md:grid-cols-[1fr_auto_1fr]">
-          <Link href={`/${locale}`} className="flex items-center shrink-0 gap-3 md:justify-self-start">
-            <LogoMark alt={t.brand} className="h-16 w-16 drop-shadow-sm sm:h-20 sm:w-20" />
-            <span className="sr-only">{t.brand}</span>
-            <span className="hidden max-w-[12rem] truncate sm:block logo-text">
-              <span className="logo-accent">{t.brand}</span>
+          <Link href={`/${locale}`} className="flex items-center shrink-0 md:justify-self-start">
+            <span className="relative h-16 w-16 shrink-0 overflow-visible sm:h-20 sm:w-20">
+              <span className="absolute inset-0 -translate-y-[20%] scale-[2] origin-center">
+                <LogoMark alt={t.brand} className="h-full w-full overflow-visible drop-shadow-sm" />
+              </span>
             </span>
+            <span className="sr-only">{t.brand}</span>
           </Link>
 
           <div className="hidden md:flex min-w-0 items-center justify-center px-6 md:col-start-2 md:col-end-3">
