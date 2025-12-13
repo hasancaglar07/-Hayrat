@@ -23,8 +23,8 @@ export default function ReadLayout({ children, modal, params }: Props) {
         settingsLabel={t.nav.settings}
         guestBadgeLabel={guestBadgeLabel}
       />
-      <main className="mx-auto w-full max-w-6xl px-0 py-8 sm:px-6 lg:px-8">
-        <div className="panel rounded-none p-0 ring-1 ring-border-light/70 backdrop-blur-sm sm:rounded-3xl sm:p-7 lg:p-8">
+      <main className="mx-auto w-full max-w-6xl px-3 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <div className="panel p-4 ring-1 ring-border-light/70 backdrop-blur-sm sm:rounded-3xl sm:p-7 lg:p-8">
           {children}
         </div>
       </main>
