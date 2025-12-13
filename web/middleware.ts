@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { defaultLocale, locales, type Locale } from "./i18n/config";
+import { createSupabaseRequestClient } from "./lib/supabase/request";
 
 const PUBLIC_FILE = /\.(.*)$/;
 
@@ -8,7 +9,7 @@ const isLocale = (value: string | undefined): value is Locale => {
   return (locales as readonly string[]).includes(value);
 };
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (
@@ -30,6 +31,13 @@ export function middleware(request: NextRequest) {
     if (cookieLocale !== firstSegment) {
       response.cookies.set("locale", firstSegment, { path: "/", sameSite: "lax" });
     }
+    // Keep Supabase auth cookies refreshed for SSR routes.
+    try {
+      const supabase = createSupabaseRequestClient(request, response);
+      await supabase?.auth.getUser();
+    } catch (error) {
+      console.error("supabase middleware getUser failed", error);
+    }
     return response;
   }
 
@@ -39,6 +47,12 @@ export function middleware(request: NextRequest) {
 
   const response = NextResponse.redirect(redirectUrl);
   response.cookies.set("locale", resolvedLocale, { path: "/", sameSite: "lax" });
+  try {
+    const supabase = createSupabaseRequestClient(request, response);
+    await supabase?.auth.getUser();
+  } catch (error) {
+    console.error("supabase middleware getUser failed", error);
+  }
   return response;
 }
 

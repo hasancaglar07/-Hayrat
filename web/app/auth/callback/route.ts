@@ -1,7 +1,6 @@
-import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { NextResponse, type NextRequest } from "next/server";
 import { defaultLocale, locales, type Locale } from "@/i18n/config";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseRequestClient } from "@/lib/supabase/request";
 
 const isLocale = (value: string | undefined): value is Locale => {
   if (!value) return false;
@@ -16,22 +15,37 @@ const isSafeInternalPath = (value: unknown): value is string => {
   return true;
 };
 
-export async function GET(request: Request) {
-  const url = new URL(request.url);
+export async function GET(nextRequest: NextRequest) {
+  const url = new URL(nextRequest.url);
   const code = url.searchParams.get("code");
   const next = url.searchParams.get("next");
 
+  const cookieCarrier = new NextResponse(null);
+  let callbackError: "oauth" | "missing_code" | null = null;
+
   if (code) {
-    const supabase = createSupabaseServerClient();
-    if (supabase) {
-      await supabase.auth.exchangeCodeForSession(code);
+    const supabase = createSupabaseRequestClient(nextRequest, cookieCarrier);
+    try {
+      await supabase?.auth.exchangeCodeForSession(code);
+    } catch (error) {
+      console.error("supabase exchangeCodeForSession failed", error);
+      callbackError = "oauth";
     }
+  } else {
+    callbackError = "missing_code";
   }
 
-  const cookieLocale = cookies().get("locale")?.value;
+  const cookieLocale = nextRequest.cookies.get("locale")?.value;
   const resolvedLocale = isLocale(cookieLocale) ? cookieLocale : defaultLocale;
   const defaultNext = `/${resolvedLocale}/app`;
-  const redirectTo = isSafeInternalPath(next) ? next : defaultNext;
+  const safeNext = isSafeInternalPath(next) ? next : defaultNext;
 
-  return NextResponse.redirect(new URL(redirectTo, url.origin));
+  const redirectTo =
+    callbackError === null
+      ? safeNext
+      : `/${resolvedLocale}/auth?next=${encodeURIComponent(safeNext)}&error=${encodeURIComponent(callbackError)}`;
+
+  const response = NextResponse.redirect(new URL(redirectTo, url.origin));
+  for (const cookie of cookieCarrier.cookies.getAll()) response.cookies.set(cookie);
+  return response;
 }

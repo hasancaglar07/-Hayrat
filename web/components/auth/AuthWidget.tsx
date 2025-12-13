@@ -8,16 +8,40 @@ import type { Session } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export function AuthWidget({ locale, redirectTo }: { locale: Locale; redirectTo?: string }) {
+export function AuthWidget({
+  locale,
+  redirectTo,
+  initialError,
+}: {
+  locale: Locale;
+  redirectTo?: string;
+  initialError?: string;
+}) {
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const t = getMessages(locale);
   const inputId = useId();
   const helpId = useId();
   const statusId = useId();
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "sent" | "error" | "loading">("idle");
+  const initialErrorMessage =
+    initialError === "oauth"
+      ? locale === "tr"
+        ? "Google ile giriş tamamlanamadı. Lütfen tekrar dene."
+        : locale === "ar"
+          ? "لم يكتمل تسجيل الدخول عبر Google. حاول مرة أخرى."
+          : "Google sign-in didn’t complete. Please try again."
+      : initialError === "missing_code"
+        ? locale === "tr"
+          ? "Giriş bağlantısı eksik/bozuk görünüyor. Lütfen tekrar dene."
+          : locale === "ar"
+            ? "يبدو أن رابط تسجيل الدخول ناقص/غير صالح. حاول مرة أخرى."
+            : "The sign-in link looks incomplete/invalid. Please try again."
+        : null;
+  const [status, setStatus] = useState<"idle" | "sent" | "error" | "loading">(() =>
+    initialErrorMessage ? "error" : "idle",
+  );
   const [session, setSession] = useState<Session | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(() => initialErrorMessage);
   const router = useRouter();
   const hasRedirected = useRef(false);
   const emailInputRef = useRef<HTMLInputElement | null>(null);
@@ -136,7 +160,12 @@ export function AuthWidget({ locale, redirectTo }: { locale: Locale; redirectTo?
       setErrorMessage(getFriendlyError(error.message));
       return;
     }
-    if (data?.url) window.location.assign(data.url);
+    if (!data?.url) {
+      setStatus("error");
+      setErrorMessage(genericError);
+      return;
+    }
+    window.location.assign(data.url);
   };
 
   const signIn = async () => {

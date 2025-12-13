@@ -86,7 +86,11 @@ export default async function SettingsPage({ params }: { params: { locale: Local
       readingSettings: { fontSize, lineHeightMultiplier, autoScroll, autoScrollSpeed, screenLock, hapticsEnabled, theme, contentLanguages },
     });
 
-    cookies().set("theme-preference", themePreference ?? "system", { path: "/", sameSite: "lax" });
+    cookies().set("theme-preference", themePreference ?? defaultAppSettings.themePreference ?? "light", {
+      path: "/",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 365,
+    });
     redirect(`/${language}/app/settings`);
   };
 

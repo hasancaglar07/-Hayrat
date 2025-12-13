@@ -50,10 +50,10 @@ export function AppGate({ locale, nextPath }: { locale: Locale; nextPath?: strin
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-6xl px-0 py-8 sm:px-6 lg:px-8">
         <div className="space-y-6">
           <Card className="rounded-3xl border-primary/15 bg-primary/5">
-            <CardContent className="p-8">
+            <CardContent className="p-5 sm:p-8">
               <h1 className="page-title text-primary">{t.footer.sections.app.links.app}</h1>
               <p className="mt-3 text-base text-text-medium">
                 Takip etmek (streak/puan/eksik günler) için giriş yapman gerekir. Okumaya hemen başlamak istersen misafir modunu kullanabilirsin.
