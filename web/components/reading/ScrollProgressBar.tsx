@@ -23,9 +23,8 @@ export function ScrollProgressBar() {
   }, []);
 
   return (
-    <div className="h-1 w-full bg-gray-100">
+    <div className="h-1 w-full bg-black/10 dark:bg-white/10">
       <div className="h-full rounded-r-full bg-primary transition-all" style={{ width: `${progress}%` }} />
     </div>
   );
 }
-

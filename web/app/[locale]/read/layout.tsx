@@ -3,6 +3,7 @@ import { getMessages } from "@/i18n/config";
 import { getMobileT } from "@/i18n/mobile";
 import { ReadNav } from "@/components/layout/ReadNav";
 import { Footer } from "@/components/layout/Footer";
+import { ReadMainFrame } from "@/components/layout/ReadMainFrame";
 
 type Props = { children: React.ReactNode; modal: React.ReactNode; params: { locale: Locale } };
 
@@ -23,11 +24,7 @@ export default function ReadLayout({ children, modal, params }: Props) {
         settingsLabel={t.nav.settings}
         guestBadgeLabel={guestBadgeLabel}
       />
-      <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <div className="panel p-4 ring-1 ring-border-light/70 backdrop-blur-sm sm:rounded-3xl sm:p-7 lg:p-8">
-          {children}
-        </div>
-      </main>
+      <ReadMainFrame locale={params.locale}>{children}</ReadMainFrame>
       <Footer locale={params.locale} variant="guest" />
       {modal}
     </div>

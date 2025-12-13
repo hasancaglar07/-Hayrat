@@ -59,19 +59,19 @@ export default async function ReadingPage({ params, searchParams }: { params: { 
   const showTranslation = contentLanguages.some((l) => l !== "arabic" && l !== "transliteration");
   const textStyle = { fontSize: `${settings.fontSize}px`, lineHeight: settings.lineHeightMultiplier };
   const arabicStyle = { fontSize: `${settings.fontSize + 10}px` };
-  const themeClasses =
+  const pageThemeClasses =
     settings.theme === "dark"
-      ? "bg-background-dark text-white border-gray-700"
+      ? "bg-background-dark text-white"
       : settings.theme === "sepia"
-        ? "bg-[#fdf6e3] text-[#0f1a17] border-gray-200"
-        : "bg-[#fdfaf3] text-[#0c1d1b] border-gray-200";
+        ? "bg-[#fdf6e3] text-[#0f1a17]"
+        : "bg-[#fdfaf3] text-[#0c1d1b]";
 
   const headerClasses =
     settings.theme === "dark"
-      ? "border-gray-700 bg-black/60"
+      ? "border-gray-700 bg-black/40"
       : settings.theme === "sepia"
-        ? "border-gray-200 bg-[#fdf6e3]/90"
-        : "border-gray-100 bg-white/90";
+        ? "border-gray-200 bg-[#fdf6e3]/80"
+        : "border-gray-200 bg-[#fdfaf3]/80";
 
   const headerLinkClasses =
     settings.theme === "dark"
@@ -157,12 +157,10 @@ export default async function ReadingPage({ params, searchParams }: { params: { 
   };
 
   return (
-    <div className="flex flex-col items-center px-0 py-6 md:py-8">
+    <div className={`w-full px-0 py-6 md:py-8 ${pageThemeClasses}`}>
       <AutoScroll enabled={settings.autoScroll} speed={settings.autoScrollSpeed} />
       <BookmarkSync dayId={day} date={date} />
-        <div
-          className={`relative left-1/2 w-screen -translate-x-1/2 overflow-hidden rounded-none border-0 shadow-none sm:static sm:left-auto sm:w-full sm:translate-x-0 sm:max-w-4xl sm:rounded-2xl sm:border sm:shadow-sm ${themeClasses}`}
-        >
+      <div className="mx-auto w-full max-w-4xl">
         <div className={`flex min-h-16 items-center justify-between border-b px-4 py-2 backdrop-blur-md ${headerClasses}`}>
           <a className={headerLinkClasses} href={`/${params.locale}/app`}>
             <span className="material-symbols-outlined">arrow_back</span>
@@ -178,7 +176,7 @@ export default async function ReadingPage({ params, searchParams }: { params: { 
 
         <ScrollProgressBar />
 
-        <div className="space-y-12 p-4 sm:p-6 md:p-10 lg:p-12">
+        <div className="space-y-12 px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-12 lg:px-12">
           <div className="flex justify-center">
             <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-micro font-bold uppercase tracking-wide text-primary">
               <span className="mr-2 h-2 w-2 animate-pulse rounded-full bg-primary" />

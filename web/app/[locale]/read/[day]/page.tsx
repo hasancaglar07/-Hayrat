@@ -54,19 +54,19 @@ export default function ReadDayPage({
   const textStyle = { fontSize: `${settings.fontSize}px`, lineHeight: settings.lineHeightMultiplier };
   const arabicStyle = { fontSize: `${settings.fontSize + 10}px` };
 
-  const themeClasses =
+  const pageThemeClasses =
     settings.theme === "dark"
-      ? "bg-background-dark text-white border-gray-700"
+      ? "bg-background-dark text-white"
       : settings.theme === "sepia"
-        ? "bg-[#fdf6e3] text-[#0f1a17] border-gray-200"
-        : "bg-[#fdfaf3] text-[#0c1d1b] border-gray-200";
+        ? "bg-[#fdf6e3] text-[#0f1a17]"
+        : "bg-[#fdfaf3] text-[#0c1d1b]";
 
   const headerClasses =
     settings.theme === "dark"
-      ? "border-gray-700 bg-black/60"
+      ? "border-gray-700 bg-black/40"
       : settings.theme === "sepia"
-        ? "border-gray-200 bg-[#fdf6e3]/90"
-        : "border-gray-100 bg-white/90";
+        ? "border-gray-200 bg-[#fdf6e3]/80"
+        : "border-gray-200 bg-[#fdfaf3]/80";
 
   const headerLinkClasses =
     settings.theme === "dark"
@@ -107,11 +107,11 @@ export default function ReadDayPage({
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className={`w-full ${pageThemeClasses}`}>
       <AutoScroll enabled={settings.autoScroll} speed={settings.autoScrollSpeed} />
 
       <div
-        className={`relative left-1/2 w-screen -translate-x-1/2 overflow-hidden rounded-none border-0 shadow-none sm:static sm:left-auto sm:w-full sm:translate-x-0 sm:max-w-4xl sm:rounded-2xl sm:border sm:shadow-sm ${themeClasses}`}
+        className="mx-auto w-full max-w-4xl"
       >
         <div className={`flex min-h-16 items-center justify-between border-b px-4 py-2 backdrop-blur-md ${headerClasses}`}>
           <Link className={headerLinkClasses} href={`/${params.locale}/read`}>
@@ -128,7 +128,7 @@ export default function ReadDayPage({
 
         <ScrollProgressBar />
 
-        <div className="space-y-8 p-4 sm:p-6 md:p-10 lg:p-12">
+        <div className="space-y-8 px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-12 lg:px-12">
           <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
             <p className="text-sm font-semibold text-primary">{isCompleted ? markedMessage : bannerText}</p>
             <div className="mt-3 flex flex-col gap-2 sm:flex-row">

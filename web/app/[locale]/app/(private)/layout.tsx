@@ -15,6 +15,7 @@ import { userTodayDateString } from "@/lib/core/userTime";
 import { getSchemaStatus } from "@/lib/data/schemaStatus";
 import { SupabaseSchemaNotice } from "@/components/feedback/SupabaseSchemaNotice";
 import { ThemePreferenceSync } from "@/components/theme/ThemePreferenceSync";
+import { AppMainFrame } from "@/components/layout/AppMainFrame";
 
 type Props = { children: React.ReactNode; modal: React.ReactNode; params: { locale: Locale } };
 
@@ -76,14 +77,9 @@ export default async function AppLayout({ children, modal, params }: Props) {
         notificationTime={notificationTime}
         missedCount={missedLast30.length}
       />
-      <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <div className="panel p-4 ring-1 ring-border-light/70 backdrop-blur-sm sm:rounded-3xl sm:p-7 lg:p-8">
-          <div className="mb-6">
-            <SupabaseSchemaNotice status={schemaStatus} locale={params.locale} />
-          </div>
-          <PageTransition>{children}</PageTransition>
-        </div>
-      </main>
+      <AppMainFrame locale={params.locale} schemaNotice={<SupabaseSchemaNotice status={schemaStatus} locale={params.locale} />}>
+        <PageTransition>{children}</PageTransition>
+      </AppMainFrame>
       <Footer locale={params.locale} />
       {modal}
     </div>
