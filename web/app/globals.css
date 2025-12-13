@@ -262,11 +262,11 @@ body {
 }
 
 .page-section {
-  @apply max-w-6xl mx-auto px-3 sm:px-6 lg:px-8;
+  @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
 .nav-section {
-  @apply max-w-6xl mx-auto w-full px-3 sm:px-6 lg:px-8;
+  @apply w-full px-4 sm:px-6 lg:px-8;
 }
 
 @layer components {

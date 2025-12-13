@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function LoadingAuth() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-secondary px-3 sm:px-4">
+    <div className="flex min-h-screen items-center justify-center bg-secondary px-4 sm:px-4">
       <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-soft ring-1 ring-primary/5">
         <div className="space-y-3">
           <Skeleton className="h-8 w-40 rounded-xl" />

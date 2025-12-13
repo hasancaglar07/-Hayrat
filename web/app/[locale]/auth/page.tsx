@@ -99,7 +99,7 @@ export default async function AuthPage({
         ? "يمكنك البدء بالقراءة كضيف، لكن التتبع لن يتزامن بين الأجهزة."
         : "You can read as a guest, but progress won’t sync across devices.";
   return (
-    <div className="relative min-h-screen overflow-hidden bg-secondary px-3 py-10 text-text-dark sm:px-4">
+    <div className="relative min-h-screen overflow-hidden bg-secondary px-4 py-10 text-text-dark sm:px-4">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_50%_at_50%_0%,color-mix(in_oklch,var(--primary)_16%,white)_0%,transparent_70%)]" />
       <div className="pointer-events-none absolute -top-44 -right-24 h-[560px] w-[560px] rounded-full bg-primary/10 blur-3xl liquid-blob liquid-blob--slow" />
       <div className="pointer-events-none absolute -bottom-52 -left-28 h-[520px] w-[520px] rounded-full bg-primary/5 blur-3xl liquid-blob liquid-blob--fast" />

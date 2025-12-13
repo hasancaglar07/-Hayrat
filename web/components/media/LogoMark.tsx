@@ -10,6 +10,7 @@ type LogoMarkProps = {
   className?: string;
   fallbackSrc?: string;
   animationSrc?: string;
+  zoom?: number;
 };
 
 export function LogoMark({
@@ -17,6 +18,7 @@ export function LogoMark({
   className,
   fallbackSrc = "/images/logo2.png",
   animationSrc = "/images/Mosque%20Animation.json",
+  zoom = 1,
 }: LogoMarkProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [animationReady, setAnimationReady] = useState(false);
@@ -67,6 +69,8 @@ export function LogoMark({
     };
   }, [animationSrc]);
 
+  const effectiveZoom = Number.isFinite(zoom) && zoom > 0 ? zoom : 1;
+
   return (
     <div className={clsx("relative shrink-0 overflow-hidden", className)} role="img" aria-label={alt}>
       {!animationFailed ? (
@@ -77,6 +81,7 @@ export function LogoMark({
             "absolute inset-0 h-full w-full pointer-events-none",
             !animationReady && "opacity-0",
           )}
+          style={{ transform: `scale(${effectiveZoom})`, transformOrigin: "center" }}
         />
       ) : null}
 
@@ -90,6 +95,7 @@ export function LogoMark({
           "h-full w-full object-contain",
           !animationFailed && animationReady && "opacity-0",
         )}
+        style={{ transform: `scale(${effectiveZoom})`, transformOrigin: "center" }}
       />
     </div>
   );

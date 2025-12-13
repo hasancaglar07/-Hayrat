@@ -25,7 +25,7 @@ export default function LoadingApp() {
         </div>
       </nav>
 
-      <main className="mx-auto w-full max-w-6xl px-3 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="panel p-4 ring-1 ring-border-light/70 backdrop-blur-sm sm:rounded-3xl sm:p-7 lg:p-8">
           <div className="space-y-4">
             <Skeleton className="h-7 w-56 rounded-xl" />
