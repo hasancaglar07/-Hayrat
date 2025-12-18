@@ -23,9 +23,9 @@ export const createSupabaseClient = (): SupabaseClient | null => {
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: false,
+      flowType: "pkce",
     },
   });
 };
 
 export const supabase = createSupabaseClient();
-

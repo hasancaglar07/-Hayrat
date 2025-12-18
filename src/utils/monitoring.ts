@@ -1,4 +1,4 @@
-import * as Sentry from "sentry-expo";
+import * as Sentry from "@sentry/react-native";
 
 let initialized = false;
 
@@ -6,7 +6,6 @@ export const initMonitoring = (dsn?: string) => {
   if (initialized || !dsn) return;
   Sentry.init({
     dsn,
-    enableInExpoDevelopment: true,
     debug: __DEV__,
     tracesSampleRate: __DEV__ ? 0.0 : 0.1,
   });
@@ -15,5 +14,12 @@ export const initMonitoring = (dsn?: string) => {
 
 export const captureError = (error: unknown, context?: Record<string, unknown>) => {
   if (!initialized) return;
-  Sentry.Native.captureException(error, context);
+  if (context) {
+    Sentry.withScope((scope) => {
+      scope.setContext("context", context as Record<string, any>);
+      Sentry.captureException(error);
+    });
+    return;
+  }
+  Sentry.captureException(error);
 };

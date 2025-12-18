@@ -3,7 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const contentLocales = ["ar", "tr", "en", "es", "fr", "id", "ru"];
+const contentLocales = ["ar", "tr", "en", "es", "fr", "de", "pt", "id", "ru", "hi", "ur", "zh"];
 const baseLocale = "ar";
 
 const contentDir = path.join(__dirname, "..", "packages", "content", "src");
@@ -55,4 +55,3 @@ if (hasErrors) {
 }
 
 console.log(`content: OK (${contentLocales.length} locales, base=${baseLocale}, ids=${baseIds.size})`);
-

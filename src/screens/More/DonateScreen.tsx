@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, Pressable, Alert, Linking, Share, ScrollView, Image } from "react-native";
+import { Text, View, Alert, Linking, ScrollView } from "react-native";
 import AppHeader from "../../components/AppHeader";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { DonateStackParamList } from "../../navigation/types";
@@ -7,34 +7,23 @@ import PrimaryButton from "../../components/PrimaryButton";
 import SecondaryButton from "../../components/SecondaryButton";
 import { useTranslation } from "react-i18next";
 import { colors, radii, spacing } from "../../theme/designTokens";
-import { DONATION_IBAN, DONATION_URL, DONATION_METRICS, PRIVACY_POLICY_URL, TERMS_URL, SUPPORT_EMAIL } from "../../constants/config";
+import { DONATION_URL, DONATION_METRICS, PRIVACY_POLICY_URL, TERMS_URL, SUPPORT_EMAIL } from "../../constants/config";
 import * as WebBrowser from "expo-web-browser";
 import { useNavigation } from "@react-navigation/native";
-import * as Clipboard from "expo-clipboard";
+import { buildLocalizedWebUrl } from "../../utils/webLinks";
 
 // Donate screen with gentle copy (see docs/04-navigation-and-screens.md)
 const DonateScreen: React.FC<NativeStackScreenProps<DonateStackParamList, "Donate">> = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const nav = useNavigation<any>();
-  const iban = DONATION_IBAN;
-  const donationUrl = DONATION_URL;
-
-  const copyIban = async () => {
-    try {
-      await Clipboard.setStringAsync(iban);
-      Alert.alert(t("screen.donate.copyIban") || "IBAN kopyalandı", iban);
-    } catch {
-      try {
-        await Share.share({ message: iban });
-      } catch {
-        Alert.alert(t("screen.donate.copyIban") || "Copy IBAN", iban);
-      }
-    }
-  };
+  const language = i18n.resolvedLanguage || i18n.language;
+  const donationUrl = buildLocalizedWebUrl("/app/donate", language) || DONATION_URL;
+  const privacyUrl = buildLocalizedWebUrl("/app/legal/privacy-policy", language) || PRIVACY_POLICY_URL;
+  const termsUrl = buildLocalizedWebUrl("/app/legal/terms-of-use", language) || TERMS_URL;
 
   const openExternal = async (url: string, fallbackTitle?: string) => {
     if (!url) {
-      Alert.alert(fallbackTitle || t("screen.donate.title"), t("screen.donate.note") || "Link not available yet.");
+      Alert.alert(fallbackTitle || t("screen.donate.title"), t("screen.donate.note"));
       return;
     }
     const supported = await Linking.canOpenURL(url);
@@ -51,7 +40,7 @@ const DonateScreen: React.FC<NativeStackScreenProps<DonateStackParamList, "Donat
     if (supported) {
       await Linking.openURL(mailto);
     } else {
-      Alert.alert(t("legal.support") || "Support", SUPPORT_EMAIL);
+      Alert.alert(t("legal.support"), SUPPORT_EMAIL);
     }
   };
   return (
@@ -60,7 +49,7 @@ const DonateScreen: React.FC<NativeStackScreenProps<DonateStackParamList, "Donat
       <ScrollView contentContainerStyle={{ paddingHorizontal: spacing.screen, paddingTop: 16, paddingBottom: 32, gap: 20 }}>
         <View style={{ gap: 12 }}>
           <Text className="text-3xl font-extrabold" style={{ color: colors.textPrimary, lineHeight: 38 }}>
-            {t("screen.donate.heroTitle") || "Support Delâilü’l-Hayrât"}
+            {t("screen.donate.heroTitle")}
           </Text>
           <Text className="text-lg leading-7" style={{ color: colors.textSecondary }}>
             {t("screen.donate.body")}
@@ -68,9 +57,9 @@ const DonateScreen: React.FC<NativeStackScreenProps<DonateStackParamList, "Donat
         </View>
 
         <View className="flex-row justify-between">
-          {[
-            { value: DONATION_METRICS.countries, label: t("screen.donate.countries") || "Countries" },
-            { value: DONATION_METRICS.readings, label: t("screen.donate.readings") || "Readings Completed" },
+            {[
+            { value: DONATION_METRICS.countries, label: t("screen.donate.countries") },
+            { value: DONATION_METRICS.readings, label: t("screen.donate.readings") },
           ].map((item) => (
             <View key={item.label} className="items-start">
               <Text className="text-3xl font-extrabold" style={{ color: colors.textPrimary }}>
@@ -98,55 +87,15 @@ const DonateScreen: React.FC<NativeStackScreenProps<DonateStackParamList, "Donat
           }}
         >
           <Text className="text-xl font-bold" style={{ color: colors.textPrimary }}>
-            {t("screen.donate.online") || "Online Donation"}
+            {t("screen.donate.online")}
           </Text>
           <Text className="text-base" style={{ color: colors.textSecondary, lineHeight: 24 }}>
-            {t("screen.donate.onlineBody") || "Use our secure online portal for any contribution."}
+            {t("screen.donate.onlineBody")}
           </Text>
           <PrimaryButton
             title={t("action.openDonation")}
-            onPress={async () => {
-              if (donationUrl) {
-                const supported = await Linking.canOpenURL(donationUrl);
-                if (supported) {
-                  await WebBrowser.openBrowserAsync(donationUrl);
-                } else {
-                  Alert.alert(t("screen.donate.online") || "Online Donation", donationUrl);
-                }
-              } else {
-                Alert.alert(t("screen.donate.note"));
-              }
-            }}
+            onPress={() => openExternal(donationUrl, t("screen.donate.online"))}
           />
-        </View>
-
-        <View
-          style={{
-            backgroundColor: "#eef1f7",
-            borderRadius: radii.lg,
-            padding: 18,
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 12,
-          }}
-        >
-          <View
-            className="h-10 w-10 rounded-full items-center justify-center"
-            style={{ backgroundColor: "#dbe6f5" }}
-          >
-            <Image source={require("../../../assets/icons/custom/Book_book.png")} style={{ width: 20, height: 20, tintColor: colors.textPrimary }} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text className="text-base font-semibold" style={{ color: colors.textPrimary }}>
-              {t("screen.donate.bank") || "Bank Transfer Details"}
-            </Text>
-            <Text className="text-lg font-bold" style={{ color: colors.textPrimary }}>
-              {iban}
-            </Text>
-          </View>
-          <Pressable onPress={copyIban}>
-            <Image source={require("../../../assets/icons/custom/Bookmark_bookmark.png")} style={{ width: 20, height: 20, tintColor: colors.textSecondary }} />
-          </Pressable>
         </View>
 
         <View style={{ gap: 10, paddingBottom: 12 }}>
@@ -167,14 +116,14 @@ const DonateScreen: React.FC<NativeStackScreenProps<DonateStackParamList, "Donat
           }}
         >
           <Text className="text-lg font-bold" style={{ color: colors.textPrimary }}>
-            {t("screen.donate.legalTitle") || "Legal & Support"}
+            {t("screen.donate.legalTitle")}
           </Text>
           <Text className="text-sm" style={{ color: colors.textSecondary, lineHeight: 20 }}>
-            {t("screen.donate.legalSubtitle") || "Policies and help for the app."}
+            {t("screen.donate.legalSubtitle")}
           </Text>
           <View style={{ gap: 8, paddingTop: 4 }}>
-            <SecondaryButton title={t("legal.privacy")} onPress={() => openExternal(PRIVACY_POLICY_URL, t("legal.privacy") || "Privacy Policy")} />
-            <SecondaryButton title={t("legal.terms")} onPress={() => openExternal(TERMS_URL, t("legal.terms") || "Terms of Use")} />
+            <SecondaryButton title={t("legal.privacy")} onPress={() => openExternal(privacyUrl, t("legal.privacy"))} />
+            <SecondaryButton title={t("legal.terms")} onPress={() => openExternal(termsUrl, t("legal.terms"))} />
             <SecondaryButton title={t("legal.support")} onPress={openMail} />
           </View>
         </View>

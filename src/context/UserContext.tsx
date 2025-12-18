@@ -30,7 +30,7 @@ const createDefaultProfile = (id: string, language: AppLanguage = deviceLanguage
   const now = new Date().toISOString();
   return {
     id,
-    nickname: "Reader",
+    nickname: i18n.t("common.reader", { lng: language }),
     appLanguage: language,
     targetReadingDaysPerWeek: 7,
     khatmDurationDays: 7,

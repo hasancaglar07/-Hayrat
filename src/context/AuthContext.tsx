@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useEffect, useMemo, useState, ReactNode, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "../utils/supabase";
+import { Platform } from "react-native";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -36,6 +38,45 @@ const AuthContext = createContext<AuthContextValue>({
 });
 
 const generateGuestId = () => `guest-${Math.random().toString(36).slice(2)}-${Date.now().toString(36)}`;
+
+const extractOAuthCode = (url: string): string | null => {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    const direct = parsed.searchParams.get("code");
+    if (direct) return direct;
+    const hash = parsed.hash?.startsWith("#") ? parsed.hash.slice(1) : parsed.hash;
+    if (hash) {
+      const hashParams = new URLSearchParams(hash);
+      const hashCode = hashParams.get("code");
+      if (hashCode) return hashCode;
+    }
+  } catch {
+    // ignore invalid URLs; fall back to regex parsing below
+  }
+  const match = url.match(/[?&#]code=([^&#]+)/);
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
+};
+
+const getOAuthRedirectUrl = () => {
+  if (Platform.OS === "web") return Linking.createURL("auth/callback");
+  const executionEnvironment = (Constants as any)?.executionEnvironment as string | undefined;
+  const isExpoGo =
+    executionEnvironment === "storeClient" ||
+    (executionEnvironment == null && (Constants as any)?.appOwnership === "expo");
+  if (isExpoGo) return Linking.createURL("auth/callback");
+  const schemeValue = (Constants.expoConfig as any)?.scheme;
+  const scheme = Array.isArray(schemeValue) ? schemeValue[0] : schemeValue;
+  if (typeof scheme === "string" && scheme.trim()) {
+    return `${scheme.trim()}://auth/callback`;
+  }
+  return Linking.createURL("auth/callback");
+};
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [guestId, setGuestId] = useState<string>("");
@@ -91,8 +132,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const handleAuthUrl = async (url: string) => {
       if (!supabase) return;
+      const code = extractOAuthCode(url);
+      if (!code) return;
       try {
-        await supabase.auth.exchangeCodeForSession(url);
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) throw error;
       } catch {
         // ignore invalid auth links
       }
@@ -117,7 +161,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signInWithProvider = useCallback(async (provider: OAuthProvider) => {
     if (!supabase) throw new Error("supabase_not_configured");
-    const redirectTo = Linking.createURL("auth/callback");
+    const redirectTo = getOAuthRedirectUrl();
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: { redirectTo },
@@ -125,7 +169,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (error || !data.url) throw error || new Error("oauth_url_missing");
     const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
     if (result.type === "success" && result.url) {
-      await supabase.auth.exchangeCodeForSession(result.url);
+      const code = extractOAuthCode(result.url);
+      if (!code) throw new Error("oauth_code_missing");
+      const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+      if (exchangeError) {
+        const { data: maybeSession } = await supabase.auth.getSession();
+        if (!maybeSession.session) throw exchangeError;
+      }
     } else if (result.type === "dismiss" || result.type === "cancel") {
       throw new Error("oauth_cancelled");
     }
@@ -134,7 +184,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signInWithEmail = useCallback(async (email: string) => {
     if (!supabase) throw new Error("supabase_not_configured");
     if (!email) throw new Error("email_missing");
-    const emailRedirectTo = Linking.createURL("auth/callback");
+    const emailRedirectTo = getOAuthRedirectUrl();
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
@@ -162,4 +212,3 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useAuthContext = () => useContext(AuthContext);
-

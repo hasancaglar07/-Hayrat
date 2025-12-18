@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import i18n from "../i18n/i18n";
 import { AppLanguage, AppSettings, ContentLanguage, ReadingSettings, ThemeMode } from "../data/types";
 import { STORAGE_KEYS } from "../data/storageKeys";
-import { scheduleAllNotifications, cancelAllNotifications } from "../utils/notifications";
+import { scheduleAllNotifications, cancelAllNotifications, requestPermission } from "../utils/notifications";
 import { getDefaultAppLanguage } from "../utils/deviceLanguage";
 import { useAuth } from "../hooks/useAuth";
 import { fetchSettings as fetchRemoteSettings, upsertAppSettings as upsertRemoteAppSettings, upsertReadingSettings as upsertRemoteReadingSettings } from "../lib/supabase/settings";
@@ -34,7 +34,7 @@ const defaultReadingSettings: ReadingSettings = {
   fontSize: 18,
   lineHeightMultiplier: 1.4,
   theme: "light",
-  contentLanguages: ["arabic", "transliteration", deviceLanguage],
+  contentLanguages: ["transliteration", deviceLanguage],
   autoScroll: false,
   autoScrollSpeed: 40,
   screenLock: false,
@@ -42,7 +42,7 @@ const defaultReadingSettings: ReadingSettings = {
 };
 
 const normalizeContentLanguages = (langs: ContentLanguage[] | undefined, appLanguage: AppLanguage): ContentLanguage[] => {
-  const base: ContentLanguage[] = ["arabic", "transliteration"];
+  const base: ContentLanguage[] = ["transliteration"];
   const unique = Array.from(new Set([...(langs || []), ...base].filter(Boolean))) as ContentLanguage[];
   if (unique.length > 0) return unique;
   return [...base, appLanguage];
@@ -55,7 +55,7 @@ const deriveContentLanguagesFromLegacy = (raw: any, appLanguage: AppLanguage): C
 
   // Backward compatibility for showX toggles
   const list: ContentLanguage[] = [];
-  const showArabic = raw?.showArabic ?? true;
+  const showArabic = raw?.showArabic ?? false;
   const showTransliteration = raw?.showTransliteration ?? true;
   const showTranslation = raw?.showTranslation ?? true;
   if (showArabic) list.push("arabic");
@@ -106,7 +106,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
             }
           : {
               ...defaultReadingSettings,
-              contentLanguages: ["arabic", "transliteration", parsedApp.language || defaultAppSettings.language],
+              contentLanguages: ["transliteration", parsedApp.language || defaultAppSettings.language],
             };
 
         if (!isSignedIn) {
@@ -181,7 +181,14 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateAppSettings = async (partial: Partial<AppSettings>) => {
-    const next = { ...appSettings, ...partial };
+    let next = { ...appSettings, ...partial };
+    const enablingNotifications = partial.notificationsEnabled === true && appSettings.notificationsEnabled !== true;
+    if (enablingNotifications) {
+      const granted = await requestPermission();
+      if (!granted) {
+        next = { ...next, notificationsEnabled: false };
+      }
+    }
     setAppSettings(next);
     if (partial.language) i18n.changeLanguage(partial.language);
     try {

@@ -1,11 +1,12 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { Text, View, useColorScheme, type ViewStyle } from "react-native";
 import { AppLanguage, ContentLanguage, ReadingSection, Weekday } from "../data/types";
 import { useSettings } from "../hooks/useSettings";
 import { useUser } from "../hooks/useUser";
 import { textStyles } from "../theme/typography";
 import { getSectionById } from "../data/content";
 import { useTranslation } from "react-i18next";
+import { resolveTheme } from "../utils/theme";
 
 interface ReadingTextBlockProps {
   section: ReadingSection;
@@ -17,9 +18,11 @@ const ReadingTextBlock: React.FC<ReadingTextBlockProps> = ({ section }) => {
   const { profile } = useUser();
   const { t, i18n } = useTranslation();
   const appLanguage = profile?.appLanguage || appSettings.language || "en";
+  const colorScheme = useColorScheme();
+  const theme = resolveTheme(appSettings.themePreference, readingSettings.theme, colorScheme);
   const contentLanguages: ContentLanguage[] = readingSettings.contentLanguages?.length
     ? (readingSettings.contentLanguages as ContentLanguage[])
-    : ["arabic", "transliteration", appLanguage];
+    : ["transliteration", appLanguage];
   const translationLanguages = contentLanguages.filter((lang) => lang !== "arabic" && lang !== "transliteration") as AppLanguage[];
   const showTranslationBadges = translationLanguages.length > 1;
   const fontSize = readingSettings.fontSize;
@@ -27,15 +30,19 @@ const ReadingTextBlock: React.FC<ReadingTextBlockProps> = ({ section }) => {
   const arabicSize = fontSize + 6;
   const arabicLine = arabicSize * readingSettings.lineHeightMultiplier * 1.05;
   const baseColor =
-    readingSettings.theme === "dark" ? "#e5e5df" : readingSettings.theme === "sepia" ? "#2c2217" : "#1c1917";
+    theme === "dark" ? "#e5e5df" : theme === "sepia" ? "#2c2217" : "#1c1917";
   const mutedColor =
-    readingSettings.theme === "dark" ? "rgba(229,229,223,0.7)" : readingSettings.theme === "sepia" ? "rgba(44,34,23,0.7)" : "rgba(28,25,23,0.7)";
-  const containerStyle = {
+    theme === "dark"
+      ? "rgba(229,229,223,0.7)"
+      : theme === "sepia"
+        ? "rgba(44,34,23,0.7)"
+        : "rgba(28,25,23,0.7)";
+  const containerStyle: ViewStyle = {
     paddingVertical: 8,
     paddingHorizontal: 12,
     width: "100%",
     maxWidth: 760,
-    alignSelf: "center" as const,
+    alignSelf: "center",
     gap: 12,
   };
 

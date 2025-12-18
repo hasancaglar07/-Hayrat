@@ -45,6 +45,7 @@ const AppContent = () => {
 // Root entry (see docs/02-architecture.md)
 const App = () => {
   const { loaded: fontsLoaded } = useLoadFonts();
+  const { t } = useTranslation();
   const sentryDsn = process.env.EXPO_PUBLIC_SENTRY_DSN || (Constants.expoConfig?.extra as { sentryDsn?: string })?.sentryDsn;
 
   // Initialize monitoring once; silently skip if DSN missing
@@ -53,22 +54,25 @@ const App = () => {
   useEffect(() => {
     if (!fontsLoaded) return;
 
-    Text.defaultProps = Text.defaultProps || {};
-    TextInput.defaultProps = TextInput.defaultProps || {};
+    const TextAny = Text as unknown as { defaultProps?: { style?: unknown } };
+    const TextInputAny = TextInput as unknown as { defaultProps?: { style?: unknown } };
+
+    TextAny.defaultProps = TextAny.defaultProps || {};
+    TextInputAny.defaultProps = TextInputAny.defaultProps || {};
 
     const baseStyle = { fontFamily: "InterVariable", letterSpacing: 0.1 };
-    Text.defaultProps.style = Array.isArray(Text.defaultProps.style)
-      ? [...Text.defaultProps.style, baseStyle]
-      : [Text.defaultProps.style, baseStyle].filter(Boolean);
-    TextInput.defaultProps.style = Array.isArray(TextInput.defaultProps.style)
-      ? [...TextInput.defaultProps.style, baseStyle]
-      : [TextInput.defaultProps.style, baseStyle].filter(Boolean);
+    TextAny.defaultProps.style = Array.isArray(TextAny.defaultProps.style)
+      ? [...TextAny.defaultProps.style, baseStyle]
+      : [TextAny.defaultProps.style, baseStyle].filter(Boolean);
+    TextInputAny.defaultProps.style = Array.isArray(TextInputAny.defaultProps.style)
+      ? [...TextInputAny.defaultProps.style, baseStyle]
+      : [TextInputAny.defaultProps.style, baseStyle].filter(Boolean);
   }, [fontsLoaded]);
 
   if (!fontsLoaded) {
     return (
       <View className="flex-1 items-center justify-center bg-[#fdfaf3]">
-        <Text className="text-base text-neutral-700">Loading fonts…</Text>
+        <Text className="text-base text-neutral-700">{t("app.loading")}</Text>
       </View>
     );
   }

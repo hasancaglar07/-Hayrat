@@ -44,7 +44,7 @@ const AppSettingsScreen: React.FC<NativeStackScreenProps<DonateStackParamList, "
   const handleNotificationBlur = () => {
     const parsed = parseAndFormatTime(notificationTime);
     if (!parsed) {
-      Alert.alert(t("screen.settings.notifications"), t("screen.settings.invalidTime") || "Lütfen geçerli bir saat girin (00:00 - 23:59).");
+      Alert.alert(t("screen.settings.notifications"), t("screen.settings.invalidTime"));
       setNotificationTime(appSettings.notificationTime || "21:00");
       return;
     }
@@ -63,7 +63,7 @@ const AppSettingsScreen: React.FC<NativeStackScreenProps<DonateStackParamList, "
     if (value) {
       const granted = await requestPermission();
       if (!granted) {
-        Alert.alert(t("screen.settings.notifications"), t("notifications.permissionDenied") || "Notification permission denied.");
+        Alert.alert(t("screen.settings.notifications"), t("notifications.permissionDenied"));
         return;
       }
     }
@@ -81,7 +81,7 @@ const AppSettingsScreen: React.FC<NativeStackScreenProps<DonateStackParamList, "
       >
         <View style={{ backgroundColor: "#f7f9f8", borderRadius: 28, padding: 18, shadowColor: "#000", shadowOpacity: 0.04, shadowRadius: 10, shadowOffset: { width: 0, height: 3 } }}>
           <Text className="text-sm font-semibold mb-4" style={{ color: colors.textSecondary }}>
-            {t("screen.settings.general") || "General"}
+            {t("screen.settings.general")}
           </Text>
           <Pressable
             className="flex-row items-center justify-between"
@@ -168,7 +168,7 @@ const AppSettingsScreen: React.FC<NativeStackScreenProps<DonateStackParamList, "
           {appSettings.remindMissedDays ? (
             <View style={{ marginTop: 8, gap: 10 }}>
               <Text className="text-base font-semibold" style={{ color: colors.textPrimary }}>
-                {t("screen.settings.missedSection") || "Missed day reminders"}
+                {t("screen.settings.missedSection")}
               </Text>
               <View className="flex-row flex-wrap gap-2">
                 {[1, 2, 3, 4, 5, 6, 7].map((d) => {
@@ -194,7 +194,7 @@ const AppSettingsScreen: React.FC<NativeStackScreenProps<DonateStackParamList, "
               </View>
               <View className="flex-row items-center gap-3">
                 <Text className="text-sm font-semibold" style={{ color: colors.textSecondary }}>
-                  {t("screen.settings.missedTimeLabel") || "Reminder time"}
+                  {t("screen.settings.missedTimeLabel")}
                 </Text>
                 <View className="flex-row items-center gap-2">
                   <TextInput
@@ -241,10 +241,7 @@ const AppSettingsScreen: React.FC<NativeStackScreenProps<DonateStackParamList, "
                     key={opt}
                     onPress={() => {
                       updateAppSettings({ themePreference: opt });
-                      if (opt === "system") {
-                        setTheme("light");
-                        updateReadingSettings({ theme: "light" });
-                      } else {
+                      if (opt !== "system") {
                         setTheme(opt as any);
                         updateReadingSettings({ theme: opt as any });
                       }
@@ -253,7 +250,7 @@ const AppSettingsScreen: React.FC<NativeStackScreenProps<DonateStackParamList, "
                     style={{ backgroundColor: active ? colors.accent : "#eef1f0" }}
                   >
                     <Text className="text-sm font-semibold" style={{ color: active ? "#ffffff" : colors.textPrimary }}>
-                      {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                      {t(`screen.settings.theme.${opt}`)}
                     </Text>
                   </Pressable>
                 );

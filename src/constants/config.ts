@@ -1,5 +1,4 @@
-// Central place for configurable values (IBAN, donation URL, metrics)
-export const DONATION_IBAN = process.env.EXPO_PUBLIC_IBAN || "TR00 0000 0000 0000 0000 0000";
+// Central place for configurable values (donation URL, metrics)
 export const DONATION_URL = process.env.EXPO_PUBLIC_DONATION_URL || "";
 export const DONATION_METRICS = {
   countries: process.env.EXPO_PUBLIC_METRIC_COUNTRIES || "80+",

@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useEffect, useState, useCallback } from "react";
-import { FlatList, ActivityIndicator, Pressable, Text, View, Image, Animated, useWindowDimensions } from "react-native";
+import { FlatList, ActivityIndicator, Pressable, Text, View, Image, Animated, useWindowDimensions, useColorScheme, type ViewToken } from "react-native";
 import AppHeader from "../../components/AppHeader";
 import ReadingTextBlock from "../../components/ReadingTextBlock";
 import PrimaryButton from "../../components/PrimaryButton";
@@ -9,27 +9,31 @@ import { getSectionsForDay } from "../../data/content";
 import { useSettings } from "../../hooks/useSettings";
 import { useUser } from "../../hooks/useUser";
 import { useReading } from "../../hooks/useReading";
-import { todayDateString, getWeekdayFromDate, isSameWeek } from "../../utils/date";
+import { getWeekdayFromDate, todayDateString } from "../../utils/date";
 import { useTranslation } from "react-i18next";
 import { colors, radii, spacing } from "../../theme/designTokens";
 import {
   BASE_POINTS_MAKEUP,
   BASE_POINTS_TODAY,
+  STREAK_MILESTONE_INTERVAL,
   STREAK_MILESTONE_BONUS,
   WEEKLY_BONUS_POINTS,
-  calculatePoints,
 } from "../../utils/points";
 import { useStats } from "../../hooks/useStats";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
-import { calculateStreak, isStreakMilestone } from "../../utils/streak";
+import { resolveTheme } from "../../utils/theme";
+import { getReadingRewardPreview } from "../../utils/readingRewards";
 
 // Reading flow implementation, UI refined in the revamp for calmer reading (see docs/05-reading-experience.md)
 const ReadingScreen: React.FC<NativeStackScreenProps<ReadingStackParamList, "Reading">> = ({ route, navigation }) => {
-  const fallbackDayId = getWeekdayFromDate(todayDateString());
+  const today = todayDateString();
+  const fallbackDayId = getWeekdayFromDate(today);
   const { dayId = fallbackDayId, mode = "today", date } = route.params || {};
   const { appSettings, readingSettings, updateReadingSettings } = useSettings();
+  const colorScheme = useColorScheme();
+  const theme = resolveTheme(appSettings.themePreference, readingSettings.theme, colorScheme);
   const { profile } = useUser();
   const { completeReading, setBookmark, lastReadingPosition, isLoading, startReading } = useReading();
   const { logs } = useStats();
@@ -62,41 +66,26 @@ const ReadingScreen: React.FC<NativeStackScreenProps<ReadingStackParamList, "Rea
   const hasSections = sectionTotal > 0;
   const progressCurrent = hasSections ? Math.min(currentIndex + 1, sectionTotal) : 0;
   const progressPercent = hasSections ? Math.min(100, Math.round((progressCurrent / sectionTotal) * 100)) : 0;
-  const readingDate = date || todayDateString();
-  const readingWeekday = useMemo(() => getWeekdayFromDate(readingDate), [readingDate]);
-  const prospectiveBonuses = useMemo(() => {
-    const completionDateObj = new Date(`${readingDate}T00:00:00Z`);
-    const prospectiveLog = {
-      date: readingDate,
-      weekday: readingWeekday,
-      completed: true,
-      mode,
-      pointsEarned: 0,
-      completedAt: new Date().toISOString(),
-    };
-    const logsWithoutCurrent = logs.filter((l) => l.date !== readingDate);
-    const prospectiveLogs = [...logsWithoutCurrent, prospectiveLog];
-    const weekLogs = prospectiveLogs.filter(
-      (l) => l.completed && isSameWeek(new Date(`${l.date}T00:00:00Z`), completionDateObj)
-    );
-    const inCurrentWeek = isSameWeek(completionDateObj, new Date());
-    const completedDates = new Set(weekLogs.map((l) => l.date));
-    const weekComplete = inCurrentWeek && completedDates.size >= weeklyTarget;
-    const streakPreview = calculateStreak(prospectiveLogs);
-    const milestone = isStreakMilestone(streakPreview.currentStreakDays);
-    const totalPoints = calculatePoints({
-      mode,
-      allWeekComplete: mode === "today" ? weekComplete : false,
-      isStreakMilestone: milestone,
-    });
-    return { weekComplete, milestone, totalPoints };
-  }, [logs, mode, readingDate, readingWeekday, weeklyTarget]);
-  const weeklyComplete = prospectiveBonuses.weekComplete;
-  const streakMilestone = prospectiveBonuses.milestone;
-  const showWeeklyBonus = (weeklyComplete || streakMilestone) && mode === "today" && sections.length > 0;
+  const readingDate = date || today;
+  const isFutureDate = readingDate > today;
+  const alreadyCompleted = logs.some((l) => l.date === readingDate && l.completed);
+  const rewardPreview = useMemo(
+    () =>
+      getReadingRewardPreview({
+        logs,
+        completionDate: readingDate,
+        mode,
+        weeklyTarget,
+      }),
+    [logs, mode, readingDate, weeklyTarget]
+  );
+  const weeklyBonusEarnedNow = rewardPreview.weeklyBonusEarnedNow;
+  const streakBonusEarnedNow = rewardPreview.streakBonusEarnedNow;
+  const showWeeklyBonus =
+    (weeklyBonusEarnedNow || streakBonusEarnedNow) && sections.length > 0 && !isFutureDate && !alreadyCompleted;
   const toastOpacity = useRef(new Animated.Value(0)).current;
   const toastTranslate = useRef(new Animated.Value(10)).current;
-  const iconTint = readingSettings.theme === "dark" ? "#f5f5f0" : readingSettings.theme === "sepia" ? "#3b2f2f" : colors.textPrimary;
+  const iconTint = theme === "dark" ? "#f5f5f0" : theme === "sepia" ? "#3b2f2f" : colors.textPrimary;
   const bottomInset = Math.max(insets.bottom, 12);
   const requiredTimeSec = useMemo(() => {
     const estimated = sections.reduce((acc, section) => acc + (section.estimatedDurationSec || 0), 0);
@@ -109,19 +98,19 @@ const ReadingScreen: React.FC<NativeStackScreenProps<ReadingStackParamList, "Rea
   const pointsBreakdownParts = useMemo(() => {
     const parts = [
       mode === "today"
-        ? t("screen.reading.points.today", { points: basePoints, defaultValue: `+${basePoints} bugün` })
-        : t("screen.reading.points.makeup", { points: basePoints, defaultValue: `+${basePoints} kaza` }),
+        ? t("screen.reading.points.today", { points: basePoints })
+        : t("screen.reading.points.makeup", { points: basePoints }),
     ];
-    if (weeklyComplete)
+    if (weeklyBonusEarnedNow)
       parts.push(
-        t("screen.reading.points.weeklyBonus", { points: WEEKLY_BONUS_POINTS, defaultValue: `+${WEEKLY_BONUS_POINTS} haftalık` })
+        t("screen.reading.points.weeklyBonus", { points: WEEKLY_BONUS_POINTS })
       );
-    if (streakMilestone)
+    if (streakBonusEarnedNow)
       parts.push(
-        t("screen.reading.points.streakBonus", { points: STREAK_MILESTONE_BONUS, defaultValue: `+${STREAK_MILESTONE_BONUS} streak` })
+        t("screen.reading.points.streakBonus", { points: STREAK_MILESTONE_BONUS })
       );
     return parts;
-  }, [basePoints, mode, weeklyComplete, streakMilestone, t]);
+  }, [basePoints, mode, weeklyBonusEarnedNow, streakBonusEarnedNow, t]);
   const pointsBreakdownLabel = pointsBreakdownParts.join(" · ");
 
   const toggleChrome = useCallback(
@@ -204,7 +193,7 @@ const ReadingScreen: React.FC<NativeStackScreenProps<ReadingStackParamList, "Rea
 
   const viewabilityConfig = { itemVisiblePercentThreshold: 50 };
   const onViewableItemsChanged = useRef(
-    ({ viewableItems }: { viewableItems: { index?: number }[] }) => {
+    ({ viewableItems }: { viewableItems: ViewToken[]; changed: ViewToken[] }) => {
       const first = viewableItems.find((v) => typeof v.index === "number");
       if (first && typeof first.index === "number") setCurrentIndex(first.index);
     }
@@ -222,11 +211,10 @@ const ReadingScreen: React.FC<NativeStackScreenProps<ReadingStackParamList, "Rea
   }, [dayId, date]);
 
   useEffect(() => {
-    const readingDate = date || todayDateString();
     if (lastReadingPosition && lastReadingPosition.date === readingDate && lastReadingPosition.dayId === dayId) {
       listRef.current?.scrollToOffset({ offset: lastReadingPosition.offset, animated: false });
     }
-  }, [dayId, date, lastReadingPosition]);
+  }, [dayId, lastReadingPosition, readingDate]);
 
   useEffect(() => {
     if (!readingSettings.autoScroll) return;
@@ -280,28 +268,43 @@ const ReadingScreen: React.FC<NativeStackScreenProps<ReadingStackParamList, "Rea
   }
 
   const onComplete = async () => {
+    if (isFutureDate) {
+      showToast(t("component.dayCard.status.upcoming"));
+      haptic("light");
+      return;
+    }
+    if (alreadyCompleted) {
+      showToast(t("screen.reading.completeSuccessTitle"));
+      haptic("light");
+      return;
+    }
+    if (!hasSections) {
+      showToast(t("screen.reading.noContent"));
+      haptic("light");
+      return;
+    }
     if (!canCompleteByTime) {
-      showToast(t("screen.reading.waitToComplete", { seconds: remainingSeconds, defaultValue: "Okumayı tamamlamak için {{seconds}} sn daha bekle" }));
+      showToast(t("screen.reading.waitToComplete", { seconds: remainingSeconds }));
       haptic("light");
       return;
     }
     const result = await completeReading({ dayId, mode, date });
     if (result) {
-      showToast(`+${prospectiveBonuses.totalPoints} puan: ${pointsBreakdownLabel}`);
+      showToast(t("screen.reading.pointsToast", { points: result.pointsEarned, breakdown: pointsBreakdownLabel }));
       haptic("success");
     }
   };
 
-  const backgroundColor = readingSettings.theme === "dark" ? "#0f172a" : readingSettings.theme === "sepia" ? "#f5ecd3" : colors.background;
-  const textPrimary = readingSettings.theme === "dark" ? "#f5f5f0" : readingSettings.theme === "sepia" ? "#3b2f2f" : colors.textPrimary;
-  const textMuted = readingSettings.theme === "dark" ? "#d6d6cf" : colors.textSecondary;
-  const chromeBorder = readingSettings.theme === "dark" ? "#1f2937" : readingSettings.theme === "sepia" ? "#e2d6ba" : colors.borderMuted;
+  const backgroundColor = theme === "dark" ? "#0f172a" : theme === "sepia" ? "#f5ecd3" : colors.background;
+  const textPrimary = theme === "dark" ? "#f5f5f0" : theme === "sepia" ? "#3b2f2f" : colors.textPrimary;
+  const textMuted = theme === "dark" ? "#d6d6cf" : colors.textSecondary;
+  const chromeBorder = theme === "dark" ? "#1f2937" : theme === "sepia" ? "#e2d6ba" : colors.borderMuted;
   const headerTranslate = chromeAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -80] });
   const headerOpacity = chromeAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 0] });
   const bottomTranslate = chromeAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 90] });
   const feedbackTranslate = toastAnim.interpolate({ inputRange: [0, 1], outputRange: [8, 0] });
-  const focusRailColor = readingSettings.theme === "dark" ? "rgba(91, 189, 122, 0.35)" : "rgba(91, 189, 122, 0.18)";
-  const barBackground = readingSettings.theme === "dark" ? "#0b1220" : readingSettings.theme === "sepia" ? "#f0e4ca" : colors.card;
+  const focusRailColor = theme === "dark" ? "rgba(91, 189, 122, 0.35)" : "rgba(91, 189, 122, 0.18)";
+  const barBackground = theme === "dark" ? "#0b1220" : theme === "sepia" ? "#f0e4ca" : colors.card;
 
   return (
     <View className="flex-1" style={{ backgroundColor }}>
@@ -355,7 +358,6 @@ const ReadingScreen: React.FC<NativeStackScreenProps<ReadingStackParamList, "Rea
         }
         onScroll={(event) => {
           const offset = event.nativeEvent.contentOffset.y;
-          const readingDate = date || todayDateString();
           lastOffsetRef.current = offset;
           const delta = offset - lastScrollY.current;
           if (offset < 20 || delta < -12) toggleChrome(false);
@@ -370,7 +372,6 @@ const ReadingScreen: React.FC<NativeStackScreenProps<ReadingStackParamList, "Rea
         }}
         onMomentumScrollEnd={(event) => {
           const offset = event.nativeEvent.contentOffset.y;
-          const readingDate = date || todayDateString();
           lastOffsetRef.current = offset;
           lastScrollY.current = offset;
           toggleChrome(false);
@@ -405,16 +406,17 @@ const ReadingScreen: React.FC<NativeStackScreenProps<ReadingStackParamList, "Rea
                 <Text className="text-sm font-semibold" style={{ color: textMuted }}>
                   {t("screen.reading.sectionProgress", { current: progressCurrent, total: sectionTotal })}
                 </Text>
-                <PrimaryButton title={t("screen.reading.completeButton")} onPress={onComplete} disabled={!canCompleteByTime} />
+                <PrimaryButton
+                  title={t("screen.reading.completeButton")}
+                  onPress={onComplete}
+                  disabled={alreadyCompleted || isFutureDate || !canCompleteByTime}
+                />
                 <Text className="text-xs font-semibold" style={{ color: textMuted, textAlign: "center" }}>
                   {pointsBreakdownLabel}
                 </Text>
-                {!canCompleteByTime ? (
+                {!canCompleteByTime && !alreadyCompleted && !isFutureDate ? (
                   <Text className="text-xs font-semibold" style={{ color: textMuted, textAlign: "center" }}>
-                    {t("screen.reading.waitToComplete", {
-                      seconds: remainingSeconds,
-                      defaultValue: "Okumayı tamamlamak için {{seconds}} sn daha bekle",
-                    })}
+                    {t("screen.reading.waitToComplete", { seconds: remainingSeconds })}
                   </Text>
                 ) : null}
               </>
@@ -453,7 +455,7 @@ const ReadingScreen: React.FC<NativeStackScreenProps<ReadingStackParamList, "Rea
         >
           <View
             style={{
-              backgroundColor: readingSettings.theme === "dark" ? "#111827" : "rgba(17,24,39,0.92)",
+              backgroundColor: theme === "dark" ? "#111827" : "rgba(17,24,39,0.92)",
               borderRadius: radii.xl,
               paddingVertical: 10,
               paddingHorizontal: 14,
@@ -480,7 +482,7 @@ const ReadingScreen: React.FC<NativeStackScreenProps<ReadingStackParamList, "Rea
         >
           <View
             style={{
-              backgroundColor: readingSettings.theme === "dark" ? "#0b1220" : "rgba(17,24,39,0.92)",
+              backgroundColor: theme === "dark" ? "#0b1220" : "rgba(17,24,39,0.92)",
               borderRadius: radii.xl,
               paddingVertical: 8,
               paddingHorizontal: 10,
@@ -554,7 +556,6 @@ const ReadingScreen: React.FC<NativeStackScreenProps<ReadingStackParamList, "Rea
         >
           <Pressable
             onPress={() => {
-              const readingDate = date || todayDateString();
               setBookmark({ date: readingDate, offset: lastOffsetRef.current, dayId });
               showToast(t("screen.reading.bookmarkNote", { date: readingDate }));
               haptic("light");
@@ -594,14 +595,12 @@ const ReadingScreen: React.FC<NativeStackScreenProps<ReadingStackParamList, "Rea
             }}
           >
             <Text className="text-sm font-semibold" style={{ color: colors.accentDark }}>
-              {weeklyComplete
-                ? t("screen.home.weeklyBonusTitle", { defaultValue: "Weekly bonus unlocked!" })
-                : t("screen.home.weeklyBonusHelper", { defaultValue: "Streak milestone reached!" })}
+              {weeklyBonusEarnedNow
+                ? t("screen.home.weeklyBonusTitle", { total: weeklyTarget, points: WEEKLY_BONUS_POINTS })
+                : t("screen.home.streakBonusTitle", { points: STREAK_MILESTONE_BONUS, interval: STREAK_MILESTONE_INTERVAL })}
             </Text>
             <Text className="text-xs mt-1" style={{ color: colors.textSecondary }}>
-              {streakMilestone
-                ? t("screen.home.streakBonusHelper", { defaultValue: "Extra points for every 10-day streak." })
-                : t("component.dayCard.helper.completed") || "Complete all 7 days this week to earn a bonus."}
+              {weeklyBonusEarnedNow ? t("screen.home.weeklyBonusHelper") : t("screen.home.streakBonusHelper")}
             </Text>
           </Animated.View>
         ) : null}

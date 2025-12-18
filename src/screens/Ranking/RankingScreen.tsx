@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Image, Platform, Pressable, ScrollView, Share, Text, View } from "react-native";
+import { ActivityIndicator, Image, Pressable, ScrollView, Share, Text, View } from "react-native";
 import AppHeader from "../../components/AppHeader";
 import { useStats } from "../../hooks/useStats";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -9,11 +9,12 @@ import { useTranslation } from "react-i18next";
 import { useUser } from "../../hooks/useUser";
 import { useSettings } from "../../hooks/useSettings";
 import { colors, spacing } from "../../theme/designTokens";
-import { getDateForWeekdayInCurrentWeek, isSameWeek } from "../../utils/date";
+import { getDateForWeekdayInCurrentWeek, isSameWeek, parseDateString, todayDateString } from "../../utils/date";
 import * as Haptics from "expo-haptics";
 import { useAuth } from "../../hooks/useAuth";
 import { Ionicons } from "@expo/vector-icons";
 import LottieView from "lottie-react-native";
+import { requestPermission } from "../../utils/notifications";
 
 const WEEK_SEQUENCE: Weekday[] = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 const AVATARS = [
@@ -23,34 +24,46 @@ const AVATARS = [
   require("../../../assets/icons/custom/Trophy_trophy.png"),
 ];
 
+type PreviewRow = { entry: LeaderboardEntry; position: number };
+
 // Ranking screen refined card layout (see docs/04-navigation-and-screens.md & docs/06-gamification-and-ranking.md)
 const RankingScreen: React.FC<NativeStackScreenProps<RankingStackParamList, "Ranking">> = ({ navigation }) => {
   const { stats, logs } = useStats();
   const { profile, updateProfile } = useUser();
   const { appSettings, updateAppSettings, readingSettings } = useSettings();
-  const { isSignedIn, signInWithProvider } = useAuth();
+  const { isSignedIn, signInWithProvider, userId } = useAuth();
   const { t } = useTranslation();
   const optedIn = profile?.showInGlobalRanking ?? false;
+  const meUserId = userId || profile?.id || "me";
   const [filter, setFilter] = useState<"week" | "month" | "nearby">("week");
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [pendingJoin, setPendingJoin] = useState(false);
   const [reminderSaving, setReminderSaving] = useState(false);
   const [reminderError, setReminderError] = useState<string | null>(null);
   const [listError, setListError] = useState<string | null>(null);
   const [usingFallback, setUsingFallback] = useState(true);
   const [refreshId, setRefreshId] = useState(0);
+  const apiBaseUrl = (
+    process.env.EXPO_PUBLIC_API_BASE_URL ||
+    process.env.API_BASE_URL ||
+    // If you deploy the Next.js web app, its `/api/leaderboard` route can serve as the mobile API too.
+    process.env.EXPO_PUBLIC_SITE_URL ||
+    ""
+  )
+    .trim()
+    .replace(/\/$/, "");
   const weekdayKeys: Weekday[] = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
   const today = new Date();
   const todayKey = weekdayKeys[today.getDay()];
-  const todayIso = today.toISOString().slice(0, 10);
+  const todayIso = todayDateString();
   const todayDone = (stats.lastCompletedDate && stats.lastCompletedDate === todayIso) || logs.some((l) => l.date === todayIso && l.completed);
   const weeklyCompleted = useMemo(
     () =>
       logs.filter((l) => {
         if (!l.completed) return false;
-        const dateObj = new Date(`${l.date}T00:00:00Z`);
-        return isSameWeek(dateObj, new Date());
+        return isSameWeek(parseDateString(l.date), new Date());
       }).length,
     [logs]
   );
@@ -60,7 +73,7 @@ const RankingScreen: React.FC<NativeStackScreenProps<RankingStackParamList, "Ran
     () =>
       new Set(
         logs
-          .filter((l) => l.completed && isSameWeek(new Date(`${l.date}T00:00:00Z`), new Date()))
+          .filter((l) => l.completed && isSameWeek(parseDateString(l.date), new Date()))
           .map((l) => l.date)
       ),
     [logs]
@@ -77,8 +90,8 @@ const RankingScreen: React.FC<NativeStackScreenProps<RankingStackParamList, "Ran
 
   const meEntry = useMemo(
     () => ({
-      userId: "me",
-      nickname: profile?.nickname || "You",
+      userId: meUserId,
+      nickname: profile?.nickname || t("common.you"),
       totalPoints: stats.totalPoints || 0,
       weeklyPoints: stats.weeklyPoints || 0,
       monthlyPoints: stats.monthlyPoints || 0,
@@ -86,7 +99,7 @@ const RankingScreen: React.FC<NativeStackScreenProps<RankingStackParamList, "Ran
       avatarSource: AVATARS[3],
       countryCode: profile?.countryCode,
     }),
-    [profile?.countryCode, profile?.nickname, stats.currentStreakDays, stats.monthlyPoints, stats.totalPoints, stats.weeklyPoints]
+    [meUserId, profile?.countryCode, profile?.nickname, stats.currentStreakDays, stats.monthlyPoints, stats.totalPoints, stats.weeklyPoints, t]
   );
   const fallbackLeaderboard = useMemo(
     () => [
@@ -123,16 +136,42 @@ const RankingScreen: React.FC<NativeStackScreenProps<RankingStackParamList, "Ran
     [meEntry]
   );
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(fallbackLeaderboard);
-  const previewList = useMemo(() => {
+  const previewRows = useMemo<PreviewRow[]>(() => {
     const getPointsForFilter = (entry: LeaderboardEntry) => {
       if (filter === "month") return entry.monthlyPoints ?? entry.totalPoints;
       if (filter === "week") return entry.weeklyPoints ?? entry.totalPoints;
       return entry.totalPoints;
     };
     const sorted = leaderboard.slice().sort((a, b) => getPointsForFilter(b) - getPointsForFilter(a));
-    if (filter === "nearby") return sorted.slice(0, 5);
-    return sorted.slice(0, 5);
-  }, [filter, leaderboard]);
+    if (sorted.length === 0) return [];
+
+    if (filter !== "nearby") {
+      return sorted.slice(0, 5).map((entry, idx) => ({ entry, position: idx + 1 }));
+    }
+
+    const meIndex = sorted.findIndex((entry) => entry.userId === meUserId);
+    if (meIndex < 0) return sorted.slice(0, 5).map((entry, idx) => ({ entry, position: idx + 1 }));
+
+    const windowSize = 5;
+    const halfWindow = Math.floor(windowSize / 2);
+    let start = Math.max(0, meIndex - halfWindow);
+    let end = Math.min(sorted.length, start + windowSize);
+    start = Math.max(0, end - windowSize);
+    return sorted.slice(start, end).map((entry, idx) => ({ entry, position: start + idx + 1 }));
+  }, [filter, leaderboard, meUserId]);
+
+  const rankingSummary = useMemo(() => {
+    const getPointsForFilter = (entry: LeaderboardEntry) => {
+      if (filter === "month") return entry.monthlyPoints ?? entry.totalPoints;
+      if (filter === "week") return entry.weeklyPoints ?? entry.totalPoints;
+      return entry.totalPoints;
+    };
+    const sorted = leaderboard.slice().sort((a, b) => getPointsForFilter(b) - getPointsForFilter(a));
+    if (!sorted.length) return null;
+    const meIndex = sorted.findIndex((entry) => entry.userId === meUserId);
+    const myRank = meIndex >= 0 ? meIndex + 1 : 1;
+    return { myRank, total: sorted.length };
+  }, [filter, leaderboard, meUserId]);
   const daysToBeat = Math.max(0, (stats.longestStreakDays || 0) - (stats.currentStreakDays || 0));
   const shareMessage =
     t("screen.ranking.shareMessage", {
@@ -178,11 +217,24 @@ const RankingScreen: React.FC<NativeStackScreenProps<RankingStackParamList, "Ran
     },
   ];
 
-  const startAnyOAuth = async () => {
-    const chosen = Platform.OS === "ios" ? "apple" : "google";
-    await signInWithProvider(chosen);
+  const startGoogleOAuth = async () => {
+    await signInWithProvider("google");
     if (readingSettings.hapticsEnabled !== false) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+  };
+
+  const handleSignIn = async () => {
+    if (isSaving) return;
+    setIsSaving(true);
+    setSaveError(null);
+    try {
+      await startGoogleOAuth();
+      setRefreshId((val) => val + 1);
+    } catch {
+      setSaveError(t("screen.ranking.joinAuthError"));
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -191,32 +243,55 @@ const RankingScreen: React.FC<NativeStackScreenProps<RankingStackParamList, "Ran
     setIsSaving(true);
     setSaveError(null);
 
+    if (!optedIn && !apiBaseUrl) {
+      setSaveError(
+        t("screen.ranking.backendMissing", {
+          defaultValue: "Global sıralama şu an aktif değil (sunucu ayarı eksik).",
+        })
+      );
+      setIsSaving(false);
+      return;
+    }
+
     // If joining and not signed in, trigger Supabase OAuth
     if (!optedIn && !isSignedIn) {
+      setPendingJoin(true);
       try {
-        await startAnyOAuth();
+        await startGoogleOAuth();
       } catch {
+        setPendingJoin(false);
         setSaveError(t("screen.ranking.joinAuthError"));
         setIsSaving(false);
         return;
       }
+      setIsSaving(false);
+      return;
     }
 
     // Persist opt-in/out locally (replace with backend call when ready)
     updateProfile({ showInGlobalRanking: !optedIn })
+      .then(() => setRefreshId((val) => val + 1))
       .catch(() => setSaveError(t("screen.ranking.joinError")))
       .finally(() => setIsSaving(false));
   };
   const goToTodayReading = () => {
-    const parentNav = navigation.getParent();
-    parentNav?.navigate("ReadingStack" as never, { screen: "Reading", params: { dayId: todayKey, mode: "today" } } as never);
+    const parentNav = navigation.getParent() as any;
+    parentNav?.navigate("ReadingStack", { screen: "Reading", params: { dayId: todayKey, mode: "today" } });
   };
   const toggleReminder = async () => {
     if (reminderSaving) return;
     setReminderSaving(true);
     setReminderError(null);
     try {
-      await updateAppSettings({ notificationsEnabled: !appSettings.notificationsEnabled });
+      const nextEnabled = !appSettings.notificationsEnabled;
+      if (nextEnabled) {
+        const granted = await requestPermission();
+        if (!granted) {
+          setReminderError(t("notifications.permissionDenied"));
+          return;
+        }
+      }
+      await updateAppSettings({ notificationsEnabled: nextEnabled });
       if (readingSettings.hapticsEnabled !== false) {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       }
@@ -244,6 +319,18 @@ const RankingScreen: React.FC<NativeStackScreenProps<RankingStackParamList, "Ran
   };
 
   useEffect(() => {
+    if (!pendingJoin) return;
+    if (!isSignedIn) return;
+    setPendingJoin(false);
+    setIsSaving(true);
+    setSaveError(null);
+    updateProfile({ showInGlobalRanking: true })
+      .then(() => setRefreshId((val) => val + 1))
+      .catch(() => setSaveError(t("screen.ranking.joinError")))
+      .finally(() => setIsSaving(false));
+  }, [isSignedIn, pendingJoin, t, updateProfile]);
+
+  useEffect(() => {
     if (!usingFallback) return;
     setLeaderboard(fallbackLeaderboard);
   }, [fallbackLeaderboard, usingFallback]);
@@ -253,9 +340,9 @@ const RankingScreen: React.FC<NativeStackScreenProps<RankingStackParamList, "Ran
     const loadLeaderboard = async () => {
       setIsLoading(true);
       setListError(null);
-      const baseUrl = (process.env.EXPO_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || "").replace(/\/$/, "");
+      const baseUrl = apiBaseUrl;
       const ensureMeIncluded = (list: LeaderboardEntry[]) => {
-        return list.some((entry) => entry.userId === "me") ? list : [meEntry, ...list];
+        return list.some((entry) => entry.userId === meUserId) ? list : [meEntry, ...list];
       };
 
       if (!baseUrl) {
@@ -276,7 +363,7 @@ const RankingScreen: React.FC<NativeStackScreenProps<RankingStackParamList, "Ran
       };
       const mapRemote = (row: RemoteEntry): LeaderboardEntry => ({
         userId: row.id,
-        nickname: row.name ?? "Reader",
+        nickname: row.name ?? t("common.reader"),
         totalPoints: row.points ?? 0,
         currentStreakDays: row.streak ?? 0,
         weeklyPoints: row.weeklyPoints ?? 0,
@@ -291,9 +378,8 @@ const RankingScreen: React.FC<NativeStackScreenProps<RankingStackParamList, "Ran
         }
         const data = (await response.json()) as RemoteEntry[];
         const mapped = Array.isArray(data) ? data.map(mapRemote) : [];
-        const nextList = mapped.length ? ensureMeIncluded(mapped) : fallbackLeaderboard;
-        setLeaderboard(nextList);
-        setUsingFallback(!mapped.length);
+        setLeaderboard(ensureMeIncluded(mapped));
+        setUsingFallback(false);
       } catch {
         if (controller.signal.aborted) return;
         setListError(t("screen.ranking.joinError"));
@@ -309,7 +395,7 @@ const RankingScreen: React.FC<NativeStackScreenProps<RankingStackParamList, "Ran
     loadLeaderboard();
 
     return () => controller.abort();
-  }, [fallbackLeaderboard, filter, meEntry, refreshId, t]);
+  }, [apiBaseUrl, fallbackLeaderboard, meEntry, meUserId, refreshId, t]);
 
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
@@ -546,28 +632,78 @@ const RankingScreen: React.FC<NativeStackScreenProps<RankingStackParamList, "Ran
             </Text>
           )}
 
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 6, gap: 10 }}>
+          <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", marginTop: 6, gap: 10 }}>
             <View style={{ flex: 1 }}>
               <Text className="text-xs font-semibold uppercase" style={{ color: colors.textSecondary, letterSpacing: 0.5 }}>
                 {t("screen.ranking.previewTitle")}
               </Text>
               <Text className="text-sm mt-2" style={{ color: colors.textSecondary }}>
-                {t("screen.ranking.previewSubtitle")}
+                {usingFallback ? t("screen.ranking.previewSubtitle") : t("screen.ranking.previewSubtitleLive")}
               </Text>
+              {!apiBaseUrl ? (
+                <Text className="text-sm mt-2" style={{ color: colors.warning }}>
+                  {t("screen.ranking.backendMissing", {
+                    defaultValue: "Global sıralama şu an aktif değil (sunucu ayarı eksik).",
+                  })}
+                </Text>
+              ) : null}
             </View>
-            <View
-              style={{
-                paddingHorizontal: 10,
-                paddingVertical: 6,
-                borderRadius: 999,
-                backgroundColor: colors.cardMuted,
-                borderWidth: 1,
-                borderColor: colors.borderMuted,
-              }}
-            >
-              <Text className="text-sm font-semibold" style={{ color: colors.textSecondary }}>
-                {optedIn ? t("screen.ranking.joined") : t("screen.ranking.previewBadge")}
-              </Text>
+            <View style={{ alignItems: "flex-end", gap: 8 }}>
+              {rankingSummary ? (
+                <View
+                  style={{
+                    paddingHorizontal: 10,
+                    paddingVertical: 6,
+                    borderRadius: 999,
+                    backgroundColor: colors.accentSoft,
+                    borderWidth: 1,
+                    borderColor: colors.accent,
+                  }}
+                >
+                  <Text className="text-sm font-semibold" style={{ color: colors.accentDark }}>
+                    #{rankingSummary.myRank} / {rankingSummary.total}
+                  </Text>
+                </View>
+              ) : null}
+
+              {!isSignedIn ? (
+                <Pressable
+                  onPress={handleSignIn}
+                  disabled={isSaving}
+                  style={{
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    borderRadius: 999,
+                    backgroundColor: colors.cardMuted,
+                    borderWidth: 1,
+                    borderColor: colors.borderMuted,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 8,
+                    opacity: isSaving ? 0.7 : 1,
+                  }}
+                >
+                  {isSaving ? <ActivityIndicator color={colors.textSecondary} /> : <Ionicons name="logo-google" size={16} color={colors.textSecondary} />}
+                  <Text className="text-sm font-semibold" style={{ color: colors.textSecondary }}>
+                    {t("screen.ranking.signInCta")}
+                  </Text>
+                </Pressable>
+              ) : null}
+
+              <View
+                style={{
+                  paddingHorizontal: 10,
+                  paddingVertical: 6,
+                  borderRadius: 999,
+                  backgroundColor: colors.cardMuted,
+                  borderWidth: 1,
+                  borderColor: colors.borderMuted,
+                }}
+              >
+                <Text className="text-sm font-semibold" style={{ color: colors.textSecondary }}>
+                  {optedIn ? t("screen.ranking.joined") : t("screen.ranking.previewBadge")}
+                </Text>
+              </View>
             </View>
           </View>
 
@@ -643,18 +779,20 @@ const RankingScreen: React.FC<NativeStackScreenProps<RankingStackParamList, "Ran
                   {t("screen.ranking.loading")}
                 </Text>
               </View>
-            ) : previewList.length === 0 ? (
+            ) : previewRows.length === 0 ? (
               <View style={{ paddingVertical: 16, alignItems: "center" }}>
                 <Text className="text-base font-semibold" style={{ color: colors.textSecondary }}>
                   {t("screen.ranking.empty")}
                 </Text>
               </View>
             ) : (
-              previewList.map((entry, idx) => {
-                const isMe = entry.userId === "me";
+              previewRows.map((row) => {
+                const entry = row.entry;
+                const position = row.position;
+                const isMe = entry.userId === meUserId;
                 const medals = ["🥇", "🥈", "🥉"];
-                const topThree = idx < 3;
-                const positionLabel = medals[idx] || `${idx + 1}`;
+                const topThree = position <= 3;
+                const positionLabel = medals[position - 1] || `${position}`;
                 return (
                   <View
                     key={entry.userId}
@@ -773,7 +911,7 @@ const RankingScreen: React.FC<NativeStackScreenProps<RankingStackParamList, "Ran
             <View style={{ flexDirection: "row", gap: 10 }}>
               <Pressable
                 onPress={handleToggleGlobal}
-                disabled={isSaving}
+                disabled={isSaving || (!optedIn && !apiBaseUrl)}
                 style={{
                   flex: 1,
                   height: 48,
@@ -785,6 +923,7 @@ const RankingScreen: React.FC<NativeStackScreenProps<RankingStackParamList, "Ran
                   justifyContent: "center",
                   flexDirection: "row",
                   gap: 8,
+                  opacity: isSaving || (!optedIn && !apiBaseUrl) ? 0.6 : 1,
                 }}
               >
                 {isSaving && <ActivityIndicator color={colors.accentDark} />}

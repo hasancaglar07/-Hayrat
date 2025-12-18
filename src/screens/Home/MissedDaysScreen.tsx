@@ -18,7 +18,10 @@ const MissedDaysScreen: React.FC<NativeStackScreenProps<HomeStackParamList, "Mis
   const [lookbackDays, setLookbackDays] = useState(7);
   const { profile } = useUser();
   const weeklyTarget = Math.max(1, Math.min(7, profile?.targetReadingDaysPerWeek || 7));
-  const missedDays = useMemo(() => getMissedDays(logs, lookbackDays, weeklyTarget), [logs, lookbackDays, weeklyTarget]);
+  const missedDays = useMemo(
+    () => getMissedDays(logs, lookbackDays, weeklyTarget, profile?.createdAt ? { startDate: profile.createdAt } : undefined),
+    [logs, lookbackDays, weeklyTarget, profile?.createdAt]
+  );
   const tabNav = useNavigation<any>();
   const { t } = useTranslation();
   const { appSettings } = useSettings();
@@ -61,7 +64,7 @@ const MissedDaysScreen: React.FC<NativeStackScreenProps<HomeStackParamList, "Mis
                 }}
               >
                 <Text className="text-base font-semibold" style={{ color: active ? "#ffffff" : colors.textPrimary }}>
-                  {t("screen.missed.lookback", { count: option, defaultValue: `${option}g` })}
+                  {t("screen.missed.lookback", { count: option })}
                 </Text>
               </Pressable>
             );
@@ -73,10 +76,10 @@ const MissedDaysScreen: React.FC<NativeStackScreenProps<HomeStackParamList, "Mis
               <Image source={require("../../../assets/icons/custom/Checkmark_checkmark.png")} style={{ width: 42, height: 42, tintColor: colors.accent }} />
             </View>
             <Text className="text-xl font-semibold" style={{ color: colors.textPrimary }}>
-              {t("screen.missed.emptyTitle") || "You have no missed days"}
+              {t("screen.missed.emptyTitle")}
             </Text>
             <Text className="text-base mt-2" style={{ color: colors.textSecondary }}>
-              {t("screen.missed.emptySubtitle") || "Alhamdulillah!"}
+              {t("screen.missed.emptySubtitle")}
             </Text>
           </View>
         ) : (
@@ -110,7 +113,7 @@ const MissedDaysScreen: React.FC<NativeStackScreenProps<HomeStackParamList, "Mis
                         style={{ backgroundColor: colors.cardMuted, alignSelf: "flex-start" }}
                       >
                         <Text className="text-sm font-semibold" style={{ color: colors.textSecondary }}>
-                          {t("screen.missed.notCompleted") || "Not completed"}
+                          {t("screen.missed.notCompleted")}
                         </Text>
                       </View>
                     </View>
@@ -118,7 +121,7 @@ const MissedDaysScreen: React.FC<NativeStackScreenProps<HomeStackParamList, "Mis
                       className="rounded-full px-5 py-2"
                       style={{ backgroundColor: colors.accent }}
                     >
-                      <Text className="text-base font-semibold text-white">{t("screen.missed.readAsMakeup") || "Read as makeup"}</Text>
+                      <Text className="text-base font-semibold text-white">{t("screen.missed.readAsMakeup")}</Text>
                     </View>
                   </View>
                 </Pressable>

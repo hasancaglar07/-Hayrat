@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DayReadingLog, UserStats } from "../data/types";
 import { STORAGE_KEYS } from "../data/storageKeys";
 import { calculateStreak } from "../utils/streak";
-import { isSameWeek, isSameMonth } from "../utils/date";
+import { formatDate, isSameWeek, isSameMonth, parseDateString } from "../utils/date";
 import { useAuth } from "../hooks/useAuth";
 import { fetchLogs as fetchRemoteLogs, upsertLog as upsertRemoteLog, upsertLogs as upsertRemoteLogs } from "../lib/supabase/logs";
 import { ensureProfileExists } from "../lib/supabase/profile";
@@ -36,7 +36,7 @@ const StatsContext = createContext<StatsContextValue>({
 
 const effectiveTimestamp = (log: DayReadingLog) => {
   if (log.completedAt) return new Date(log.completedAt).getTime();
-  return new Date(`${log.date}T00:00:00Z`).getTime();
+  return parseDateString(log.date).getTime();
 };
 
 const computeAggregates = (logs: DayReadingLog[]): UserStats => {
@@ -44,7 +44,7 @@ const computeAggregates = (logs: DayReadingLog[]): UserStats => {
   const now = new Date();
   const totals = completedLogs.reduce(
     (acc, log) => {
-      const dateObj = log.completedAt ? new Date(log.completedAt) : new Date(`${log.date}T00:00:00Z`);
+      const dateObj = log.completedAt ? new Date(log.completedAt) : parseDateString(log.date);
       acc.totalPoints += log.pointsEarned;
       acc.totalReadings += 1;
       if (isSameWeek(dateObj, now)) acc.weeklyPoints += log.pointsEarned;
@@ -55,9 +55,11 @@ const computeAggregates = (logs: DayReadingLog[]): UserStats => {
   );
 
   const streak = calculateStreak(completedLogs);
-  const lastCompletedDate = completedLogs.length
-    ? completedLogs[completedLogs.length - 1].completedAt?.slice(0, 10) || completedLogs[completedLogs.length - 1].date
-    : undefined;
+  const lastCompletedDate = (() => {
+    if (!completedLogs.length) return undefined;
+    const last = completedLogs[completedLogs.length - 1];
+    return last.completedAt ? formatDate(new Date(last.completedAt)) : last.date;
+  })();
 
   return {
     totalPoints: totals.totalPoints,

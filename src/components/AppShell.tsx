@@ -1,14 +1,16 @@
 import React from "react";
-import { View } from "react-native";
+import { View, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSettings } from "../hooks/useSettings";
 import { colors } from "../theme/designTokens";
+import { resolveTheme } from "../utils/theme";
 
 // Layout wrapper applying a calm background per current reading theme
 const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { readingSettings, appSettings } = useSettings();
   const preference = appSettings.themePreference;
-  const theme = preference && preference !== "system" ? preference : readingSettings.theme || "light";
+  const colorScheme = useColorScheme();
+  const theme = resolveTheme(preference, readingSettings.theme, colorScheme);
 
   const backgroundClass =
     theme === "dark" ? "bg-neutral-900" : theme === "sepia" ? "bg-[#f5ecd3]" : "";

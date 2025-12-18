@@ -2,6 +2,7 @@ import type { PostgrestError } from "@supabase/supabase-js";
 import { supabase } from "../../utils/supabase";
 import type { UserProfile } from "../../data/types";
 import { getDefaultAppLanguage } from "../../utils/deviceLanguage";
+import i18n from "../../i18n/i18n";
 
 type ProfileRow = {
   id: string;
@@ -22,7 +23,7 @@ const mapProfile = (row: ProfileRow): UserProfile => {
   const language = (row.app_language as UserProfile["appLanguage"]) || getDefaultAppLanguage();
   return {
     id: row.id,
-    nickname: row.nickname ?? "Reader",
+    nickname: row.nickname ?? i18n.t("common.reader", { lng: language }),
     appLanguage: language,
     targetReadingDaysPerWeek: row.target_reading_days_per_week ?? 7,
     khatmDurationDays: row.khatm_duration_days ?? 7,
@@ -70,10 +71,11 @@ export const ensureProfileExists = async (userId: string, fallback?: Partial<Use
   const existing = await fetchProfile(userId);
   if (existing) return existing;
   const now = new Date().toISOString();
+  const language = fallback?.appLanguage ?? getDefaultAppLanguage();
   const created: UserProfile = {
     id: userId,
-    nickname: fallback?.nickname ?? "Reader",
-    appLanguage: fallback?.appLanguage ?? getDefaultAppLanguage(),
+    nickname: fallback?.nickname ?? i18n.t("common.reader", { lng: language }),
+    appLanguage: language,
     targetReadingDaysPerWeek: fallback?.targetReadingDaysPerWeek ?? 7,
     khatmDurationDays: fallback?.khatmDurationDays ?? 7,
     showInGlobalRanking: fallback?.showInGlobalRanking ?? false,

@@ -16,6 +16,7 @@ import AppSettingsScreen from "../screens/More/AppSettingsScreen";
 import { useTranslation } from "react-i18next";
 import { Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { colors } from "../theme/designTokens";
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
@@ -58,10 +59,6 @@ const DonateStackNavigator = () => (
 const MainTabsNavigator = () => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const accent = "#2fb061";
-  const surface = "#f6f8f7";
-  const border = "#e4ebe8";
-  const muted = "#607167";
 
   const iconMap: Record<string, any> = {
     HomeStack: require("../../assets/icons/custom/Home_home.png"),
@@ -74,8 +71,8 @@ const MainTabsNavigator = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: accent,
-        tabBarInactiveTintColor: muted,
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarIcon: ({ color, size }) => {
           const source = iconMap[route.name];
           return (
@@ -87,8 +84,8 @@ const MainTabsNavigator = () => {
           );
         },
         tabBarStyle: {
-          backgroundColor: surface,
-          borderTopColor: border,
+          backgroundColor: colors.card,
+          borderTopColor: colors.borderMuted,
           paddingTop: 4,
           paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
           height: 60 + insets.bottom,

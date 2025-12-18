@@ -47,7 +47,7 @@ const defaultReadingSettings: ReadingSettings = {
   fontSize: 18,
   lineHeightMultiplier: 1.4,
   theme: "light",
-  contentLanguages: ["arabic", "transliteration", getDefaultAppLanguage()],
+  contentLanguages: ["transliteration", getDefaultAppLanguage()],
   autoScroll: false,
   autoScrollSpeed: 40,
   screenLock: false,
@@ -55,7 +55,7 @@ const defaultReadingSettings: ReadingSettings = {
 };
 
 const normalizeContentLanguages = (langs: ContentLanguage[] | undefined, appLanguage: AppLanguage): ContentLanguage[] => {
-  const base: ContentLanguage[] = ["arabic", "transliteration"];
+  const base: ContentLanguage[] = ["transliteration"];
   const unique = Array.from(new Set([...(langs || []), ...base].filter(Boolean))) as ContentLanguage[];
   if (unique.length > 0) return unique;
   return [...base, appLanguage];
@@ -66,7 +66,7 @@ const deriveContentLanguagesFromRow = (row: any, appLanguage: AppLanguage): Cont
     return normalizeContentLanguages(row.content_languages as ContentLanguage[], appLanguage);
   }
   const list: ContentLanguage[] = [];
-  const showArabic = row?.show_arabic ?? true;
+  const showArabic = row?.show_arabic ?? false;
   const showTransliteration = row?.show_transliteration ?? true;
   const showTranslation = row?.show_translation ?? true;
   if (showArabic) list.push("arabic");
@@ -117,7 +117,7 @@ export const fetchSettings = async (
         screenLock: Boolean(readingRes.data.screen_lock ?? defaultReadingSettings.screenLock),
         hapticsEnabled: Boolean(readingRes.data.haptics_enabled ?? defaultReadingSettings.hapticsEnabled),
         contentLanguages: deriveContentLanguagesFromRow(readingRes.data, appSettings.language),
-        showArabic: Boolean(readingRes.data.show_arabic ?? true),
+        showArabic: Boolean(readingRes.data.show_arabic ?? false),
         showTransliteration: Boolean(readingRes.data.show_transliteration ?? true),
         showTranslation: Boolean(readingRes.data.show_translation ?? true),
       } as any

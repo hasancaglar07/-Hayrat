@@ -1,0 +1,35 @@
+{
+  "cli": {
+    "version": ">= 7.0.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_PRIVACY_URL": "https://delail.app/privacy",
+        "EXPO_PUBLIC_TERMS_URL": "https://delail.app/terms",
+        "EXPO_PUBLIC_SUPPORT_EMAIL": "support@delail.app"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_PRIVACY_URL": "https://delail.app/privacy",
+        "EXPO_PUBLIC_TERMS_URL": "https://delail.app/terms",
+        "EXPO_PUBLIC_SUPPORT_EMAIL": "support@delail.app"
+      }
+    },
+    "production": {
+      "distribution": "store",
+      "env": {
+        "EXPO_PUBLIC_PRIVACY_URL": "https://delail.app/privacy",
+        "EXPO_PUBLIC_TERMS_URL": "https://delail.app/terms",
+        "EXPO_PUBLIC_SUPPORT_EMAIL": "support@delail.app"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

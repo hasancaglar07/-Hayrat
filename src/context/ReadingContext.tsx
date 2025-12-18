@@ -3,12 +3,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DayReadingLog, ReadingMode, Weekday } from "../data/types";
 import { STORAGE_KEYS } from "../data/storageKeys";
 import { useStatsContext } from "./StatsContext";
-import { calculatePoints } from "../utils/points";
-import { calculateStreak, isStreakMilestone } from "../utils/streak";
-import { getWeekdayFromDate, todayDateString, isSameWeek } from "../utils/date";
+import { getWeekdayFromDate, todayDateString } from "../utils/date";
 import { useUserContext } from "./UserContext";
 import { useAuth } from "../hooks/useAuth";
 import { fetchBookmark, upsertBookmark } from "../lib/supabase/bookmarks";
+import { getReadingRewardPreview, resolveReadingMode } from "../utils/readingRewards";
 
 // Reading session context (see docs/05-reading-experience.md and docs/06-gamification-and-ranking.md)
 export interface ReadingContextValue {
@@ -83,32 +82,28 @@ export const ReadingProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const checkWeeklyCompletion = useCallback((allLogs: DayReadingLog[], completionDate: string) => {
-    // Haftalık bonus: yalnızca içinde bulunduğumuz haftada, hedeflenen kadar gün tamamlanınca tetikler.
-    const completionDateObj = new Date(`${completionDate}T00:00:00Z`);
-    if (!isSameWeek(completionDateObj, new Date())) return false;
-    const weekLogs = allLogs.filter((log) => isSameWeek(new Date(`${log.date}T00:00:00Z`), completionDateObj));
-    const completedDates = new Set(weekLogs.filter((l) => l.completed).map((l) => l.date));
-    const required = Math.max(1, Math.min(7, weeklyTarget));
-    return completedDates.size >= required;
-  }, [weeklyTarget]);
-
   const completeReading = useCallback(
     async ({ dayId, mode: paramMode, date }: { dayId: Weekday; mode?: ReadingMode; date?: string }) => {
-      const completionDate = date || todayDateString();
-      const resolvedMode: ReadingMode = paramMode || (completionDate === todayDateString() ? "today" : "makeup");
+      const today = todayDateString();
+      const completionDate = date || today;
+
+      // Prevent writing logs into the future (also avoids streak/points abuse).
+      if (completionDate > today) return null;
+
+      // Idempotent completion: if already completed, don't recalculate points/bonuses.
+      if (logs.some((l) => l.date === completionDate && l.completed)) return null;
+
+      const resolvedMode: ReadingMode = resolveReadingMode({ completionDate, mode: paramMode });
       const weekday = getWeekdayFromDate(completionDate);
-
-      const existingCompletedLogs = logs.filter((log) => log.completed && log.date !== completionDate);
-      const prospectiveLog: DayReadingLog = { date: completionDate, weekday, completed: true, mode: resolvedMode, pointsEarned: 0 };
-      const streakPreview = calculateStreak([...existingCompletedLogs, prospectiveLog]);
-      const allWeekComplete =
-        resolvedMode === "today" &&
-        checkWeeklyCompletion([...logs.filter((l) => l.date !== completionDate), prospectiveLog], completionDate);
-      const milestone = isStreakMilestone(streakPreview.currentStreakDays);
-      const pointsEarned = calculatePoints({ mode: resolvedMode, allWeekComplete, isStreakMilestone: milestone });
-
       const completedAt = new Date().toISOString();
+      const { pointsEarned } = getReadingRewardPreview({
+        logs,
+        completionDate,
+        mode: resolvedMode,
+        weeklyTarget,
+        completedAt,
+      });
+
       const newLog: DayReadingLog = {
         date: completionDate,
         weekday,
@@ -128,7 +123,7 @@ export const ReadingProvider = ({ children }: { children: ReactNode }) => {
         return null;
       }
     },
-    [logs, recordCompletion, checkWeeklyCompletion]
+    [logs, recordCompletion, weeklyTarget]
   );
 
   const setBookmark = useCallback(async (payload: { date: string; offset: number; dayId: Weekday }) => {

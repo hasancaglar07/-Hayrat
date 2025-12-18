@@ -9,35 +9,21 @@ import { colors, spacing } from "../../theme/designTokens";
 // Benefits screen aligned with content docs (see docs/04-navigation-and-screens.md & docs/07-i18n-and-content.md)
 const BenefitsScreen: React.FC<NativeStackScreenProps<InfoStackParamList, "Benefits">> = () => {
   const { t } = useTranslation();
-  const ensureArray = (val: any, fallback: string[]) => (Array.isArray(val) ? val : fallback);
+  const ensureArray = (val: unknown): string[] =>
+    Array.isArray(val) ? val.filter((item): item is string => typeof item === "string") : [];
   const sections = [
     {
-      title: t("screen.about.whatTitle") || "What is Delâilü’l-Hayrât?",
-      body:
-        t("screen.about.whatBody") ||
-        "Delâilü’l-Hayrât is a celebrated collection of prayers for the Islamic prophet Muhammad, authored by the Moroccan Sufi and Islamic scholar Muhammad al-Jazuli. It is one of the most popular and universally acclaimed compilations of blessings upon the Prophet.",
+      title: t("screen.about.whatTitle"),
+      body: t("screen.about.whatBody"),
     },
     {
-      title: t("screen.about.whoTitle") || "Who wrote it?",
-      body:
-        t("screen.about.whoBody") ||
-        "It was written by Imam al-Jazuli, a revered scholar from the 15th century. His dedication and love for the Prophet Muhammad inspired him to compile this work, which has since been cherished by millions of Muslims worldwide.",
+      title: t("screen.about.whoTitle"),
+      body: t("screen.about.whoBody"),
     },
   ];
 
-  const benefitsList = ensureArray(t("screen.info.about.benefitList", { returnObjects: true }), [
-    t("screen.info.about.benefit1") || "Increased love for the Prophet Muhammad (peace be upon him).",
-    t("screen.info.about.benefit2") || "Receiving the Prophet's intercession on the Day of Judgment.",
-    t("screen.info.about.benefit3") || "Attainment of peace, tranquility, and closeness to the Divine.",
-    t("screen.info.about.benefit4") || "Fulfillment of needs and removal of difficulties.",
-  ]);
-
-  const adabList = ensureArray(t("screen.info.about.adabList", { returnObjects: true }), [
-    t("screen.info.about.adab1") || "Begin with purity by performing ablution (Wudu).",
-    t("screen.info.about.adab2") || "Face the Qibla (direction of prayer) if possible.",
-    t("screen.info.about.adab3") || "Recite with a sincere heart, mindfulness, and humility.",
-    t("screen.info.about.adab4") || "Reflect upon the meanings of the prayers and the status of the Prophet.",
-  ]);
+  const benefitsList = ensureArray(t("screen.about.benefitList", { returnObjects: true }));
+  const adabList = ensureArray(t("screen.about.adabList", { returnObjects: true }));
 
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
@@ -64,7 +50,7 @@ const BenefitsScreen: React.FC<NativeStackScreenProps<InfoStackParamList, "Benef
 
         <View>
           <Text className="text-xl font-extrabold mb-3" style={{ color: colors.accentDark }}>
-            {t("screen.about.benefitsTitle") || "Benefits of reading"}
+            {t("screen.about.benefitsTitle")}
           </Text>
           {benefitsList.map((benefit, idx) => (
             <View key={idx} className="flex-row items-start gap-2 mb-3">
@@ -78,7 +64,7 @@ const BenefitsScreen: React.FC<NativeStackScreenProps<InfoStackParamList, "Benef
 
         <View>
           <Text className="text-xl font-extrabold mb-3" style={{ color: colors.accentDark }}>
-            {t("screen.about.adabTitle") || "How to read (adab)"}
+            {t("screen.about.adabTitle")}
           </Text>
           {adabList.map((item, idx) => (
             <View key={idx} className="flex-row items-start gap-2 mb-3">

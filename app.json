@@ -9,9 +9,13 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "app.delail.hayrat",
+      "buildNumber": "1"
     },
     "android": {
+      "package": "app.delail.hayrat",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -26,7 +30,7 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "sentry-expo",
+      "@sentry/react-native",
       [
         "expo-splash-screen",
         {

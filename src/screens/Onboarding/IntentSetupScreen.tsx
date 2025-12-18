@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Alert, Pressable, Text, View } from "react-native";
 import PrimaryButton from "../../components/PrimaryButton";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { OnboardingStackParamList } from "../../navigation/types";
+import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
+import { OnboardingStackParamList, RootStackParamList } from "../../navigation/types";
 import { useUser } from "../../hooks/useUser";
 import { useTranslation } from "react-i18next";
 import { colors, radii, spacing } from "../../theme/designTokens";
@@ -23,9 +23,13 @@ const IntentSetupScreen: React.FC<NativeStackScreenProps<OnboardingStackParamLis
     setTargetDays((prev) => Math.min(7, Math.max(1, prev + delta)));
   };
 
+  const toggleKhatmDay = (delta: number) => {
+    setKhatmDays((prev) => Math.min(30, Math.max(1, prev + delta)));
+  };
+
   const onContinue = async () => {
     if (!intention) {
-      Alert.alert(t("screen.intent.title"), t("screen.intent.intentionRequired") || "Devam etmeden önce niyetini onayla.");
+      Alert.alert(t("screen.intent.title"), t("screen.intent.intentionRequired"));
       return;
     }
     const resolvedTarget = frequencyMode === "daily" ? 7 : targetDays;
@@ -34,7 +38,8 @@ const IntentSetupScreen: React.FC<NativeStackScreenProps<OnboardingStackParamLis
       khatmDurationDays: khatmDays,
       onboardingCompleted: true,
     });
-    navigation.getParent()?.navigate("MainTabs");
+    const rootNav = navigation.getParent<NativeStackNavigationProp<RootStackParamList>>();
+    rootNav?.reset({ index: 0, routes: [{ name: "MainTabs" }] });
   };
 
   return (
@@ -140,25 +145,31 @@ const IntentSetupScreen: React.FC<NativeStackScreenProps<OnboardingStackParamLis
           <Text className="text-base font-extrabold mb-3" style={{ color: colors.textPrimary }}>
             {t("screen.intent.khatmQuestion")}
           </Text>
-          <View className="flex-row items-center justify-between">
-            {Array.from({ length: 7 }).map((_, idx) => {
-              const value = idx + 1;
-              const active = value === khatmDays;
-              return (
-                <Pressable
-                  key={value}
-                  onPress={() => setKhatmDays(value)}
-                  className="h-10 flex-1 mx-1 rounded-full items-center justify-center"
-                  style={{
-                    backgroundColor: active ? colors.accent : colors.borderMuted,
-                  }}
-                >
-                  <Text className="text-base font-bold" style={{ color: active ? "#ffffff" : colors.textSecondary }}>
-                    {value}
-                  </Text>
-                </Pressable>
-              );
-            })}
+          <View className="mt-3 flex-row items-center justify-between px-3 py-3 rounded-2xl" style={{ backgroundColor: "#eff5f2" }}>
+            <Pressable
+              onPress={() => toggleKhatmDay(-1)}
+              disabled={khatmDays <= 1}
+              className="h-10 w-10 rounded-full items-center justify-center"
+              style={{ backgroundColor: "#dfe9e4", opacity: khatmDays <= 1 ? 0.5 : 1 }}
+            >
+              <Ionicons name="remove" size={20} color={colors.textPrimary} />
+            </Pressable>
+            <View className="items-center">
+              <Text className="text-2xl font-extrabold" style={{ color: colors.textPrimary }}>
+                {khatmDays}
+              </Text>
+              <Text className="text-sm font-semibold" style={{ color: colors.textSecondary }}>
+                {t("screen.profile.daysLabel")}
+              </Text>
+            </View>
+            <Pressable
+              onPress={() => toggleKhatmDay(1)}
+              disabled={khatmDays >= 30}
+              className="h-10 w-10 rounded-full items-center justify-center"
+              style={{ backgroundColor: "#dfe9e4", opacity: khatmDays >= 30 ? 0.5 : 1 }}
+            >
+              <Ionicons name="add" size={20} color={colors.textPrimary} />
+            </Pressable>
           </View>
         </View>
 

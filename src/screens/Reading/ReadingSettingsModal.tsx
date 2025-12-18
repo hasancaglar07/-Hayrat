@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View, useColorScheme } from "react-native";
 import Slider from "@react-native-community/slider";
 import AppHeader from "../../components/AppHeader";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -13,26 +13,30 @@ import SecondaryButton from "../../components/SecondaryButton";
 import { colors, radii, spacing } from "../../theme/designTokens";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { resolveTheme } from "../../utils/theme";
 
 // Reading settings modal refreshed for calm hierarchy (see docs/05-reading-experience.md)
 const ReadingSettingsModal: React.FC<NativeStackScreenProps<ReadingStackParamList, "ReadingSettingsModal">> = () => {
   const { readingSettings, updateReadingSettings, setTheme, updateAppSettings, appSettings } = useSettings();
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const colorScheme = useColorScheme();
+  const theme = resolveTheme(appSettings.themePreference, readingSettings.theme, colorScheme);
 
   const backgroundColor = "#dfe3e8";
   const cardColor = "#fdfdfd";
   const textPrimary = colors.textPrimary;
   const textMuted = colors.textSecondary;
   const autoScrollEnabled = !!readingSettings.autoScroll;
-  const baseLanguages: ContentLanguage[] = ["arabic", "transliteration"];
+  const baseLanguages: ContentLanguage[] = ["transliteration"];
   const selectedLanguages = readingSettings.contentLanguages || baseLanguages;
-  const selectedTranslations = selectedLanguages.filter((lang) => !baseLanguages.includes(lang)) as AppLanguage[];
+  const showArabic = selectedLanguages.includes("arabic");
+  const selectedTranslations = selectedLanguages.filter((lang) => lang !== "arabic" && lang !== "transliteration") as AppLanguage[];
 
   const lineHeights: { label: string; value: number }[] = [
-    { label: t("screen.readingSettings.lineHeightSmall") || "Small", value: 1.2 },
-    { label: t("screen.readingSettings.lineHeightMedium") || "Medium", value: 1.4 },
-    { label: t("screen.readingSettings.lineHeightLarge") || "Large", value: 1.6 },
+    { label: t("screen.readingSettings.lineHeightSmall"), value: 1.2 },
+    { label: t("screen.readingSettings.lineHeightMedium"), value: 1.4 },
+    { label: t("screen.readingSettings.lineHeightLarge"), value: 1.6 },
   ];
 
   const languageOptions: { code: AppLanguage; label: string }[] = [
@@ -54,7 +58,7 @@ const ReadingSettingsModal: React.FC<NativeStackScreenProps<ReadingStackParamLis
     const nextTranslations = selectedTranslations.includes(code)
       ? selectedTranslations.filter((c) => c !== code)
       : [...selectedTranslations, code];
-    const nextContentLanguages: ContentLanguage[] = Array.from(new Set([...baseLanguages, ...nextTranslations]));
+    const nextContentLanguages: ContentLanguage[] = Array.from(new Set([...(showArabic ? (["arabic"] as ContentLanguage[]) : []), ...baseLanguages, ...nextTranslations]));
     updateReadingSettings({ contentLanguages: nextContentLanguages });
   };
 
@@ -144,17 +148,15 @@ const ReadingSettingsModal: React.FC<NativeStackScreenProps<ReadingStackParamLis
             }}
           >
             <Text className="text-lg font-semibold mb-2" style={{ color: textPrimary }}>
-              {t("screen.readingSettings.section.content", { defaultValue: t("screen.readingSettings.section.visibility") })}
+              {t("screen.readingSettings.section.content")}
             </Text>
             <View className="bg-white rounded-2xl" style={{ borderColor: "#e6ece8", borderWidth: 1, padding: 14, gap: 12 }}>
               <View style={{ gap: 6 }}>
                 <Text className="text-base font-semibold" style={{ color: textPrimary }}>
-                  {t("screen.readingSettings.contentLanguagesLabel", { defaultValue: "Languages" })}
+                  {t("screen.readingSettings.contentLanguagesLabel")}
                 </Text>
                 <Text className="text-sm" style={{ color: textMuted }}>
-                  {t("screen.readingSettings.contentLanguagesHint", {
-                    defaultValue: "Pick the languages you want to see in the text. App language stays the same.",
-                  })}
+                  {t("screen.readingSettings.contentLanguagesHint")}
                 </Text>
               </View>
               <View className="flex-row flex-wrap" style={{ gap: 8 }}>
@@ -174,6 +176,17 @@ const ReadingSettingsModal: React.FC<NativeStackScreenProps<ReadingStackParamLis
                   );
                 })}
               </View>
+              <View style={{ height: 1, backgroundColor: "#e6ece8" }} />
+              <SettingsItem
+                label={t("screen.readingSettings.showArabic")}
+                hasSwitch
+                value={showArabic}
+                onToggle={(value) =>
+                  updateReadingSettings({
+                    contentLanguages: Array.from(new Set([...(value ? (["arabic"] as ContentLanguage[]) : []), ...baseLanguages, ...selectedTranslations])),
+                  })
+                }
+              />
               <View style={{ height: 1, backgroundColor: "#e6ece8" }} />
               <SettingsItem
                 label={t("screen.readingSettings.autoScroll")}
@@ -200,7 +213,7 @@ const ReadingSettingsModal: React.FC<NativeStackScreenProps<ReadingStackParamLis
             </Text>
             <View className="flex-row bg-white rounded-2xl p-2" style={{ borderColor: "#e6ece8", borderWidth: 1 }}>
               {["light", "dark", "sepia"].map((name) => {
-                const active = readingSettings.theme === name;
+                const active = theme === name;
                 return (
                   <Pressable
                     key={name}
@@ -232,7 +245,7 @@ const ReadingSettingsModal: React.FC<NativeStackScreenProps<ReadingStackParamLis
             }}
           >
             <Text className="text-lg font-semibold mb-2" style={{ color: textPrimary }}>
-              {t("screen.readingSettings.section.comfort", { defaultValue: "Comfort" })}
+              {t("screen.readingSettings.section.comfort")}
             </Text>
             <View className="bg-white rounded-2xl" style={{ borderColor: "#e6ece8", borderWidth: 1 }}>
               <SettingsItem
@@ -266,7 +279,7 @@ const ReadingSettingsModal: React.FC<NativeStackScreenProps<ReadingStackParamLis
               {t("screen.readingSettings.autoScrollSpeed")}
             </Text>
             <View className="flex-row items-center justify-between">
-              <Text style={{ color: textMuted, fontSize: 13 }}>Slow</Text>
+              <Text style={{ color: textMuted, fontSize: 13 }}>{t("screen.readingSettings.autoScrollSpeedSlow")}</Text>
               <Slider
                 style={{ flex: 1, marginHorizontal: 12, opacity: autoScrollEnabled ? 1 : 0.45 }}
                 value={readingSettings.autoScrollSpeed || 40}
@@ -279,7 +292,7 @@ const ReadingSettingsModal: React.FC<NativeStackScreenProps<ReadingStackParamLis
                 thumbTintColor={autoScrollEnabled ? colors.accent : "#cdd5d1"}
                 disabled={!autoScrollEnabled}
               />
-              <Text style={{ color: textPrimary, fontSize: 13, fontWeight: "700" }}>Fast</Text>
+              <Text style={{ color: textPrimary, fontSize: 13, fontWeight: "700" }}>{t("screen.readingSettings.autoScrollSpeedFast")}</Text>
             </View>
             {!autoScrollEnabled ? (
               <Text className="text-xs mt-2" style={{ color: textMuted }}>
@@ -297,12 +310,12 @@ const ReadingSettingsModal: React.FC<NativeStackScreenProps<ReadingStackParamLis
               {t("screen.readingSettings.autosaveNote")}
             </Text>
             <SecondaryButton
-              title={t("screen.readingSettings.reset") || "Reset to defaults"}
+              title={t("screen.readingSettings.reset")}
               onPress={() => {
                 updateReadingSettings({
                   fontSize: 18,
                   lineHeightMultiplier: 1.4,
-                  contentLanguages: ["arabic", "transliteration", appSettings.language || "tr"],
+                  contentLanguages: ["transliteration", appSettings.language || "tr"],
                   autoScroll: false,
                   autoScrollSpeed: 40,
                   screenLock: false,

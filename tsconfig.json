@@ -8,9 +8,23 @@
       ]
     }
   },
+  "exclude": [
+    "node_modules",
+    "web",
+    "components",
+    "hooks",
+    "constants",
+    "app-example",
+    "dist",
+    "web-build"
+  ],
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
+    "App.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "packages/*/src/**/*.ts",
+    "packages/*/src/**/*.tsx",
+    "global.d.ts",
     "nativewind-env.d.ts"
   ]
 }

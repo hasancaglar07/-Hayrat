@@ -8,7 +8,7 @@ import { fallbackLanguage, translations } from "@delail/i18n";
 const initialLanguage = getDefaultAppLanguage();
 
 i18n.use(initReactI18next).init({
-  compatibilityJSON: "v3",
+  compatibilityJSON: "v4",
   lng: initialLanguage,
   fallbackLng: fallbackLanguage,
   resources: Object.fromEntries(Object.entries(translations).map(([lng, dict]) => [lng, { translation: dict }])),
